@@ -14,7 +14,7 @@ export default function ServicesPage() {
           <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
             Logistics Solutions
           </span>
-          <h1 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
+          <h1 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
             Our Shipping Services
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-lg leading-relaxed">
@@ -94,7 +94,7 @@ export default function ServicesPage() {
             <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
               Work Process
             </span>
-            <h2 className="font-heading font-bold text-3xl md:text-4xl text-white mt-4">
+            <h2 className="font-heading font-bold text-xl sm:text-3xl md:text-4xl text-white mt-4">
               How VEER Handles Shipments
             </h2>
           </div>
@@ -120,7 +120,7 @@ export default function ServicesPage() {
             <div className="w-12 h-12 rounded-2xl bg-success/10 text-success flex items-center justify-center border border-success/20 mb-4">
               <ShieldCheck className="w-6 h-6" />
             </div>
-            <h2 className="font-heading font-bold text-2xl md:text-3xl text-dark">Need Custom Pricing?</h2>
+            <h2 className="font-heading font-bold text-xl sm:text-2xl md:text-3xl text-dark">Need Custom Pricing?</h2>
             <p className="text-dark/60 text-sm mt-2 leading-relaxed">
               We offer bespoke contracts for corporate businesses, local manufacturing hubs, and regular e-commerce exporters. Save up to 35% on standard shipping costs.
             </p>

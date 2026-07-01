@@ -118,7 +118,7 @@ export default function InquiryPage() {
           <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
             Quotation System
           </span>
-          <h1 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
+          <h1 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
             Request Shipment Quote
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-lg leading-relaxed">

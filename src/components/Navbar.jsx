@@ -115,18 +115,18 @@ export default function Navbar() {
               })}
             </div>
 
-            <div className="flex flex-col gap-4 mt-12">
+            <div className="flex flex-col gap-3 mt-8">
               <Link
                 href="/tracking"
                 onClick={() => setIsOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl border border-white/10 bg-white/5 text-white font-semibold text-center hover:bg-white/10 transition-colors"
+                className="btn-outline-white w-full flex items-center justify-center gap-2 text-sm"
               >
                 <Search className="w-4 h-4 text-secondary" />
                 Track Shipment
               </Link>
               <a
                 href={`tel:${CONTACT_INFO.phone.replace(/\s+/g, '')}`}
-                className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-primary text-white font-semibold text-center hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20"
+                className="btn-primary w-full flex items-center justify-center gap-2 text-sm"
               >
                 <Phone className="w-4 h-4" />
                 Call Now

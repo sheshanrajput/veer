@@ -21,7 +21,7 @@ export default function AboutPage() {
           <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
             Our Legacy
           </span>
-          <h1 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
+          <h1 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
             Delivering Trust Worldwide
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-lg leading-relaxed">
@@ -36,7 +36,7 @@ export default function AboutPage() {
           <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full self-start">
             Our Journey
           </span>
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-dark">
+          <h2 className="font-heading font-bold text-xl sm:text-3xl md:text-4xl text-dark">
             From Ahmedabad to the World Stage
           </h2>
           <p className="text-dark/70 text-sm md:text-base leading-relaxed">
@@ -111,7 +111,7 @@ export default function AboutPage() {
 
       {/* 4. CHRONOLOGICAL TIMELINE */}
       <section className="max-w-4xl mx-auto px-6 md:px-8 py-12">
-        <h2 className="font-heading font-bold text-3xl text-center text-dark mb-16">Milestones of Progress</h2>
+        <h2 className="font-heading font-bold text-xl sm:text-3xl text-center text-dark mb-16">Milestones of Progress</h2>
         <div className="relative border-l-2 border-black/10 pl-6 md:pl-10 ml-4 flex flex-col gap-12">
           {TIMELINE_EVENTS.map((event, idx) => (
             <div key={idx} className="relative">
@@ -131,7 +131,7 @@ export default function AboutPage() {
       {/* 5. MEET OUR LEADERSHIP */}
       <section className="max-w-7xl mx-auto px-6 md:px-8 py-20 border-t border-black/[0.04]">
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-dark">Logistics Experts</h2>
+          <h2 className="font-heading font-bold text-xl sm:text-3xl md:text-4xl text-dark">Logistics Experts</h2>
           <p className="text-dark/60 text-sm mt-3">
             Our expert team in Ahmedabad manages airline partnerships, custom guidelines, and B2B shipments.
           </p>
@@ -182,20 +182,88 @@ export default function AboutPage() {
       </section>
 
       {/* 6. CALL TO ACTION */}
-      <section className="max-w-5xl mx-auto px-6 md:px-8 mt-12">
-        <div className="bg-primary text-white rounded-3xl p-10 text-center flex flex-col items-center gap-6 shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_var(--tw-gradient-stops))] from-secondary/30 via-transparent to-transparent pointer-events-none" />
-          <h2 className="font-heading font-bold text-3xl">Ready to send your package?</h2>
-          <p className="text-white/80 text-sm max-w-md">
+      <section className="relative mx-4 sm:mx-8 mb-16 sm:mb-24 overflow-hidden rounded-[32px] bg-dark text-white border border-white/5 shadow-2xl py-16 sm:py-24">
+        {/* Glow Spheres */}
+        <motion.div
+          animate={{
+            x: [0, 40, -20, 0],
+            y: [0, -30, 20, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -top-20 -right-20 w-80 h-80 bg-primary/20 rounded-full blur-[80px] pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            x: [0, -50, 30, 0],
+            y: [0, 40, -30, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/15 rounded-full blur-[80px] pointer-events-none"
+        />
+
+        {/* Diagonal Tech Grid Lines */}
+        <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+        {/* Floating Cargo Elements */}
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+          className="absolute left-10 top-12 text-white/5 hidden md:block"
+        >
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </motion.div>
+        
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut", delay: 1 }}
+          className="absolute right-12 bottom-12 text-white/5 hidden md:block"
+        >
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </motion.div>
+
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10 flex flex-col items-center gap-6">
+          <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-secondary/10 px-3.5 py-1.5 rounded-full border border-secondary/20 animate-pulse">
+            Next-Gen Express Cargo
+          </span>
+          
+          <h2 className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight max-w-2xl">
+            Ready to Route Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Worldwide Delivery?</span>
+          </h2>
+          
+          <p className="text-white/60 text-sm sm:text-base md:text-lg max-w-lg leading-relaxed">
             Get an instant custom quote including taxes and customs advice. Free door pickup collection.
           </p>
-          <div className="flex gap-4">
-            <Link href="/inquiry" className="bg-white text-primary font-bold rounded-xl py-3 px-6 hover:bg-slate-100 transition-colors shadow-md">
-              Calculate Freight Cost
-            </Link>
-            <Link href="/contact" className="border border-white/20 hover:bg-white/5 text-white font-bold rounded-xl py-3 px-6 transition-colors">
-              Talk to Our Team
-            </Link>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto px-4 sm:px-0">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+              <Link
+                href="/inquiry"
+                className="btn-secondary w-full text-center block shadow-lg shadow-secondary/20"
+              >
+                Calculate Freight Cost
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+              <Link
+                href="/contact"
+                className="btn-outline-white w-full text-center block"
+              >
+                Talk to Our Team
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>

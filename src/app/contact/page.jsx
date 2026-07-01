@@ -52,7 +52,7 @@ export default function ContactPage() {
           <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
             Contact Channels
           </span>
-          <h1 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
+          <h1 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
             Let's Ship Worldwide
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-lg leading-relaxed">
@@ -67,7 +67,7 @@ export default function ContactPage() {
         {/* Left Column: Form & Info */}
         <div className="lg:col-span-7 flex flex-col gap-8">
           <div className="bg-white rounded-3xl border border-black/[0.04] p-8 shadow-premium">
-            <h2 className="font-heading font-bold text-2xl text-dark mb-6">Send Us a Message</h2>
+            <h2 className="font-heading font-bold text-lg sm:text-2xl text-dark mb-6">Send Us a Message</h2>
             
             {success && (
               <div className="mb-6 p-4 bg-success/5 border border-success/20 rounded-xl text-success text-sm flex gap-2">

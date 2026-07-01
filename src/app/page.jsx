@@ -60,10 +60,10 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 25 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                className="font-heading font-black text-3xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight tracking-tight text-white"
+                className="font-heading font-black text-2xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight tracking-tight text-white"
               >
                 {/* Mobile version (inline flow with reduced space) */}
-                <span className="block sm:hidden leading-[1.1] text-3xl">
+                <span className="block sm:hidden leading-[1.1] text-2xl">
                   Fast. Secure. <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Worldwide Delivery.</span>
                 </span>
                 {/* Desktop version (stacked layout) */}
@@ -143,7 +143,7 @@ export default function HomePage() {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-secondary hover:brightness-90 text-white font-semibold rounded-xl py-3.5 transition-all duration-300 shadow-md shadow-primary/20"
+                    className="w-full bg-gradient-to-r from-primary to-secondary hover:brightness-90 text-white font-semibold rounded-xl py-2.5 sm:py-3.5 text-sm sm:text-base transition-all duration-300 shadow-md shadow-primary/20"
                   >
                     Locate Shipment
                   </button>
@@ -185,7 +185,7 @@ export default function HomePage() {
         </section>
 
         {/* 2. STATS SECTION */}
-        <section className="pb-24 pt-8 lg:pt-0 relative z-10 px-6 md:px-8">
+        <section className="pb-12 sm:pb-24 pt-4 lg:pt-0 relative z-10 px-6 md:px-8">
           <div className="max-w-7xl mx-auto">
             <StatCounters />
           </div>
@@ -198,12 +198,12 @@ export default function HomePage() {
       </section>
 
       {/* 4. WHY CHOOSE US */}
-      <section className="py-12 px-6 md:px-8 max-w-7xl mx-auto">
+      <section className="py-8 sm:py-12 px-6 md:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-2xl mx-auto mb-6 flex flex-col items-center">
           <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
             Uncompromised Logistics
           </span>
-          <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+          <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
             Why Shippers Select VEER
           </h2>
           <p className="text-dark/60 text-base mt-4">
@@ -243,7 +243,7 @@ export default function HomePage() {
               <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
                 Global Operations
               </span>
-              <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+              <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
                 Designed to Handle Any Shipment
               </h2>
             </div>
@@ -314,7 +314,7 @@ export default function HomePage() {
           <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
             Streamlined Journey
           </span>
-          <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+          <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
             How Your Parcel Travels
           </h2>
           <p className="text-dark/60 text-base mt-4">
@@ -367,7 +367,7 @@ export default function HomePage() {
             <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-white/5 px-3.5 py-1.5 rounded-full">
               Global Network Map
             </span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-white mt-4">
+            <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-white mt-4">
               Real-time Global Connectivity
             </h2>
             <p className="text-white/60 text-base mt-4">
@@ -385,7 +385,7 @@ export default function HomePage() {
           <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
             Client Endorsements
           </span>
-          <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+          <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
             What Our Shippers Say
           </h2>
         </div>
@@ -453,7 +453,7 @@ export default function HomePage() {
             <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
               Industry Knowledge
             </span>
-            <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+            <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
               Latest Insights & Logistics News
             </h2>
           </div>
@@ -500,7 +500,7 @@ export default function HomePage() {
           <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
             Help Desk
           </span>
-          <h2 className="font-heading font-bold text-4xl md:text-5xl text-dark mt-4">
+          <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
             Frequently Asked Questions
           </h2>
         </div>
@@ -509,28 +509,88 @@ export default function HomePage() {
       </section>
 
       {/* 11. CALL TO ACTION */}
-      <section className="py-20 bg-primary text-white relative overflow-hidden mx-6 md:mx-8 rounded-[32px] mb-24 shadow-2xl">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_right,_var(--tw-gradient-stops))] from-secondary/40 via-transparent to-transparent pointer-events-none" />
+      <section className="relative mx-4 sm:mx-8 mb-6 sm:mb-10 overflow-hidden rounded-[32px] bg-dark text-white border border-white/5 shadow-2xl py-6 sm:py-6">
+        {/* Glow Spheres */}
+        <motion.div
+          animate={{
+            x: [0, 40, -20, 0],
+            y: [0, -30, 20, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -top-20 -right-20 w-80 h-80 bg-primary/20 rounded-full blur-[80px] pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            x: [0, -50, 30, 0],
+            y: [0, 40, -30, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/15 rounded-full blur-[80px] pointer-events-none"
+        />
+
+        {/* Diagonal Tech Grid Lines */}
+        <div className="absolute inset-0 opacity-5 bg-[linear-gradient(to_right,#ffffff_1px,transparent_1px),linear-gradient(to_bottom,#ffffff_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+
+        {/* Floating Cargo Elements */}
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+          className="absolute left-10 top-12 text-white/5 hidden md:block"
+        >
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>
+        </motion.div>
+        
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 8, ease: "easeInOut", delay: 1 }}
+          className="absolute right-12 bottom-12 text-white/5 hidden md:block"
+        >
+          <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </motion.div>
+
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10 flex flex-col items-center gap-6">
-          <h2 className="font-heading font-black text-4xl md:text-5xl lg:text-6xl text-white tracking-tight">
-            Need to Ship Internationally?
+          <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-secondary/10 px-3.5 py-1.5 rounded-full border border-secondary/20 animate-pulse">
+            Next-Gen Express Cargo
+          </span>
+          
+          <h2 className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight max-w-2xl">
+            Ready to Route Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Worldwide Delivery?</span>
           </h2>
-          <p className="text-white/80 text-base md:text-lg max-w-lg leading-relaxed">
+          
+          <p className="text-white/60 text-sm sm:text-base md:text-lg max-w-lg leading-relaxed">
             Get instant competitive pricing, door pickup collection, and secure document clearance packages today.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center mt-4">
-            <Link
-              href="/inquiry"
-              className="bg-white text-primary font-bold rounded-xl py-3.5 px-8 transition-colors duration-300 hover:bg-slate-100 shadow-lg shadow-black/10"
-            >
-              Book Your Shipment Now
-            </Link>
-            <Link
-              href="/contact"
-              className="border border-white/20 hover:bg-white/5 text-white font-bold rounded-xl py-3.5 px-8 transition-all duration-300"
-            >
-              Contact Support
-            </Link>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto px-4 sm:px-0">
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+              <Link
+                href="/inquiry"
+                className="btn-secondary w-full text-center block shadow-lg shadow-secondary/20"
+              >
+                Book Your Shipment Now
+              </Link>
+            </motion.div>
+            
+            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
+              <Link
+                href="/contact"
+                className="btn-outline-white w-full text-center block"
+              >
+                Contact Support
+              </Link>
+            </motion.div>
           </div>
         </div>
       </section>

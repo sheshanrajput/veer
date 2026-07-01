@@ -46,7 +46,7 @@ export default function NotFound() {
         <div className="flex flex-wrap gap-4 justify-center mt-6">
           <Link
             href="/"
-            className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-white hover:bg-primary-dark font-bold text-sm transition-colors duration-300 shadow-lg shadow-primary/20"
+            className="btn-primary flex items-center gap-2 text-sm"
           >
             <Home className="w-4 h-4" />
             Home Console
@@ -54,7 +54,7 @@ export default function NotFound() {
           
           <Link
             href="/tracking"
-            className="flex items-center gap-2 px-6 py-3.5 rounded-xl border border-white/10 hover:bg-white/5 font-bold text-sm text-white transition-all duration-300"
+            className="btn-outline-white flex items-center gap-2 text-sm"
           >
             <Search className="w-4 h-4 text-secondary" />
             Track Shipment

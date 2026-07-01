@@ -65,7 +65,7 @@ export default function StatCounters() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 py-12 px-6 md:px-10 rounded-[32px] bg-gradient-to-tr from-dark to-dark-light border border-white/10 shadow-2xl relative overflow-hidden">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 py-8 sm:py-12 px-6 md:px-10 rounded-[32px] bg-gradient-to-tr from-dark to-dark-light border border-white/10 shadow-2xl relative overflow-hidden">
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-0 right-0 w-44 h-44 bg-primary/10 rounded-full blur-[80px]" />
       <div className="absolute bottom-0 left-0 w-44 h-44 bg-secondary/10 rounded-full blur-[80px]" />

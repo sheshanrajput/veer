@@ -25,25 +25,25 @@
     @apply bg-dark/80 backdrop-blur-lg border border-white/5 shadow-2xl;
   }
 
-  /* Buttons hover: slightly darken, NO STYLE CHANGING */
+  /* Buttons hover: responsive padding and font-size */
   .btn-primary {
-    @apply bg-primary text-white font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-primary-dark shadow-lg shadow-primary/10;
+    @apply bg-primary text-white font-semibold rounded-xl py-2.5 px-4 sm:py-3.5 sm:px-6 text-sm sm:text-base transition-colors duration-300 hover:bg-primary-dark shadow-lg shadow-primary/10;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-secondary-dark shadow-lg shadow-secondary/10;
+    @apply bg-secondary text-white font-semibold rounded-xl py-2.5 px-4 sm:py-3.5 sm:px-6 text-sm sm:text-base transition-colors duration-300 hover:bg-secondary-dark shadow-lg shadow-secondary/10;
   }
 
   .btn-accent {
-    @apply bg-accent text-dark font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-accent-dark shadow-lg shadow-accent/15;
+    @apply bg-accent text-dark font-semibold rounded-xl py-2.5 px-4 sm:py-3.5 sm:px-6 text-sm sm:text-base transition-colors duration-300 hover:bg-accent-dark shadow-lg shadow-accent/15;
   }
 
   .btn-outline {
-    @apply border border-black/10 text-dark font-semibold rounded-xl py-3.5 px-6 transition-all duration-300 hover:bg-black/[0.02];
+    @apply border border-black/10 text-dark font-semibold rounded-xl py-2.5 px-4 sm:py-3.5 sm:px-6 text-sm sm:text-base transition-all duration-300 hover:bg-black/[0.02];
   }
   
   .btn-outline-white {
-    @apply border border-white/20 text-white font-semibold rounded-xl py-3.5 px-6 transition-all duration-300 hover:bg-white/5;
+    @apply border border-white/20 text-white font-semibold rounded-xl py-2.5 px-4 sm:py-3.5 sm:px-6 text-sm sm:text-base transition-all duration-300 hover:bg-white/5;
   }
 }
 
