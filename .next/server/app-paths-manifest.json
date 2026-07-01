@@ -1,8 +1,13 @@
 {
-  "/tracking/page": "app/tracking/page.js",
+  "/api/tracking/[id]/route": "app/api/tracking/[id]/route.js",
+  "/api/inquiry/route": "app/api/inquiry/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/about/page": "app/about/page.js",
-  "/inquiry/page": "app/inquiry/page.js",
   "/contact/page": "app/contact/page.js",
+  "/inquiry/page": "app/inquiry/page.js",
+  "/privacy/page": "app/privacy/page.js",
+  "/page": "app/page.js",
+  "/tracking/page": "app/tracking/page.js",
   "/services/page": "app/services/page.js",
-  "/page": "app/page.js"
+  "/terms/page": "app/terms/page.js"
 }

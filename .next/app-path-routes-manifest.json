@@ -1,0 +1,13 @@
+{
+  "/api/tracking/[id]/route": "/api/tracking/[id]",
+  "/api/inquiry/route": "/api/inquiry",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/contact/page": "/contact",
+  "/inquiry/page": "/inquiry",
+  "/privacy/page": "/privacy",
+  "/page": "/",
+  "/tracking/page": "/tracking",
+  "/services/page": "/services",
+  "/terms/page": "/terms"
+}
