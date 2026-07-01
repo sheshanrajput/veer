@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-dark font-sans antialiased selection:bg-primary/20;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  /* Premium Glassmorphism styling */
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-lg border border-black/[0.04] shadow-premium hover:shadow-premium-hover transition-all duration-300;
+  }
+  
+  .glass-card-dark {
+    @apply bg-dark/80 backdrop-blur-lg border border-white/5 shadow-2xl;
+  }
+
+  /* Buttons hover: slightly darken, NO STYLE CHANGING */
+  .btn-primary {
+    @apply bg-primary text-white font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-primary-dark shadow-lg shadow-primary/10;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-white font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-secondary-dark shadow-lg shadow-secondary/10;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-dark font-semibold rounded-xl py-3.5 px-6 transition-colors duration-300 hover:bg-accent-dark shadow-lg shadow-accent/15;
+  }
+
+  .btn-outline {
+    @apply border border-black/10 text-dark font-semibold rounded-xl py-3.5 px-6 transition-all duration-300 hover:bg-black/[0.02];
+  }
+  
+  .btn-outline-white {
+    @apply border border-white/20 text-white font-semibold rounded-xl py-3.5 px-6 transition-all duration-300 hover:bg-white/5;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbars for sliders */
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F7FAFC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #07182E;
+  border-radius: 5px;
+  border: 2px solid #F7FAFC;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0057FF;
+}
+
+/* Lenis Custom Integration */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overflow: clip;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
