@@ -15,6 +15,7 @@ import StatCounters from '@/components/StatCounters';
 import TrustedBrands from '@/components/TrustedBrands';
 import WorldMap from '@/components/WorldMap';
 import FAQAccordion from '@/components/FAQAccordion';
+import GallerySection from '@/components/GallerySection';
 
 export default function HomePage() {
   const [trackNum, setTrackNum] = useState('');
@@ -143,7 +144,7 @@ export default function HomePage() {
                   </div>
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-secondary hover:brightness-90 text-white font-semibold rounded-xl py-2.5 sm:py-3.5 text-sm sm:text-base transition-all duration-300 shadow-md shadow-primary/20"
+                    className="btn-primary w-full"
                   >
                     Locate Shipment
                   </button>
@@ -295,7 +296,7 @@ export default function HomePage() {
                     </ul>
                     <Link
                       href="/services"
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-black/10 hover:bg-black/[0.02] text-sm font-semibold text-dark transition-all duration-300"
+                      className="btn-outline w-full flex items-center justify-center gap-2"
                     >
                       Learn More
                       <ArrowUpRight className="w-4 h-4 text-dark/40" />
@@ -378,6 +379,9 @@ export default function HomePage() {
           <WorldMap />
         </div>
       </section>
+
+      {/* GALLERY SECTION */}
+      <GallerySection />
 
       {/* 8. TESTIMONIALS */}
       <section className="py-12 px-6 md:px-8 max-w-7xl mx-auto">

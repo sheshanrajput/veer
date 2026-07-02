@@ -41,7 +41,7 @@ export default function Navbar() {
           isDocked && !isOpen ? '-translate-y-4' : 'translate-y-0'
         }`}
       >
-        <div className="max-w-7xl mx-auto bg-black border border-white/10 rounded-full px-6 py-2.5 shadow-2xl flex items-center justify-between">
+        <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-md border border-black/15 rounded-full px-6 py-2.5 shadow-xl flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
             <img 
@@ -52,7 +52,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav className="hidden lg:flex items-center gap-1 bg-white/5 border border-white/10 p-1 rounded-full">
+          <nav className="hidden lg:flex items-center gap-1 bg-black/5 border border-black/5 p-1 rounded-full">
             {NAV_LINKS.map((link) => {
               const isActive = pathname === link.path;
               return (
@@ -60,7 +60,7 @@ export default function Navbar() {
                   key={link.path}
                   href={link.path}
                   className={`relative text-xs font-bold tracking-wide uppercase px-4 py-2 rounded-full transition-colors duration-300 ${
-                    isActive ? 'text-black z-10' : 'text-white/80 hover:text-white'
+                    isActive ? 'text-white z-10' : 'text-dark/70 hover:text-dark'
                   }`}
                 >
                   {link.name}
@@ -80,14 +80,14 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             <Link
               href="/tracking"
-              className="flex items-center gap-2 px-5 py-2 rounded-full border border-white/10 bg-white/5 text-white hover:bg-white/10 text-xs font-bold transition-all duration-300"
+              className="flex items-center gap-2 px-5 py-2 rounded-full border border-black/10 bg-black/5 text-dark hover:bg-black/10 text-xs font-bold transition-all duration-300"
             >
               <Search className="w-3.5 h-3.5 text-secondary" />
               Track Shipment
             </Link>
             <a
               href={`tel:${CONTACT_INFO.phone.replace(/\s+/g, '')}`}
-              className="flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-white hover:bg-primary-dark text-xs font-bold transition-all duration-300 shadow-md shadow-primary/20"
+              className="flex items-center gap-2 px-5 py-2 rounded-full bg-secondary text-white hover:bg-secondary-dark text-xs font-bold transition-all duration-300 shadow-md shadow-secondary/20"
             >
               <Phone className="w-3.5 h-3.5" />
               Call Now
@@ -97,7 +97,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
-            className="lg:hidden p-2 rounded-full text-white hover:bg-white/5 transition-colors"
+            className="lg:hidden p-2 rounded-full text-dark hover:bg-dark/5 transition-colors"
             aria-label="Toggle Menu"
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -113,7 +113,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-dark pt-28 px-6 pb-8 flex flex-col justify-between lg:hidden overflow-y-auto"
+            className="fixed inset-0 z-40 bg-white pt-28 px-6 pb-8 flex flex-col justify-between lg:hidden overflow-y-auto"
           >
             <div className="flex flex-col gap-6">
               {NAV_LINKS.map((link) => {
@@ -124,7 +124,7 @@ export default function Navbar() {
                     href={link.path}
                     onClick={() => setIsOpen(false)}
                     className={`text-xl font-heading font-semibold uppercase tracking-wider ${
-                      isActive ? 'text-secondary' : 'text-white/70'
+                      isActive ? 'text-secondary' : 'text-dark/70'
                     }`}
                   >
                     {link.name}
@@ -137,7 +137,7 @@ export default function Navbar() {
               <Link
                 href="/tracking"
                 onClick={() => setIsOpen(false)}
-                className="btn-outline-white w-full flex items-center justify-center gap-2 text-sm"
+                className="btn-outline w-full flex items-center justify-center gap-2 text-sm"
               >
                 <Search className="w-4 h-4 text-secondary" />
                 Track Shipment
@@ -149,7 +149,7 @@ export default function Navbar() {
                 <Phone className="w-4 h-4" />
                 Call Now
               </a>
-              <div className="text-center text-white/40 text-xs mt-6">
+              <div className="text-center text-dark/40 text-xs mt-6">
                 © {new Date().getFullYear()} VEER Express Cargo. All Rights Reserved.
               </div>
             </div>

@@ -75,10 +75,10 @@ export default function ServicesPage() {
                 <div className="p-6 pt-0">
                   <Link
                     href={`/inquiry?service=${service.id}`}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-dark text-white hover:bg-dark-light text-sm font-semibold transition-colors duration-300"
+                    className="btn-primary w-full flex items-center justify-center gap-2"
                   >
                     Book This Shipment
-                    <ArrowRight className="w-4 h-4 text-secondary" />
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               </motion.div>

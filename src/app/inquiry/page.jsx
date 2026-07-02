@@ -543,11 +543,11 @@ export default function InquiryPage() {
               ) : (
                 <button
                   onClick={handleFinalSubmit}
-                  className="btn-primary bg-success hover:bg-success/90 shadow-success/10 flex items-center gap-2 py-3 px-8 text-sm"
+                  className="btn-primary flex items-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "Registering..." : "Submit Quote Inquiry"}
-                  <Send className="w-4 h-4 text-secondary" />
+                  <Send className="w-4 h-4" />
                 </button>
               )}
             </div>
