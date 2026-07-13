@@ -1,7 +1,8 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, ArrowLeft, ImageIcon } from 'lucide-react';
+
+import React, { useRef, useState, useEffect } from "react";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { ArrowRight, ArrowLeft, MapPin, Maximize2, X } from "lucide-react";
 
 const GALLERY_IMAGES = [
   {
@@ -55,148 +56,283 @@ const GALLERY_IMAGES = [
 ];
 
 export default function GallerySection() {
-  const [activeIndex, setActiveIndex] = useState(2); // Start with the 3rd item as active
-  const [isMobile, setIsMobile] = useState(false);
+  const x = useMotionValue(0);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 28 });
+  const [selectedImage, setSelectedImage] = useState(null);
+  const containerRef = useRef(null);
 
+  // Responsive settings
   useEffect(() => {
-    const checkViewport = () => {
-      setIsMobile(window.innerWidth < 768);
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setDimensions({ cardWidth: 220, gap: 16 });
+      } else {
+        setDimensions({ cardWidth: 340, gap: 28 });
+      }
     };
-    checkViewport();
-    window.addEventListener('resize', checkViewport);
-    return () => window.removeEventListener('resize', checkViewport);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const { cardWidth, gap } = dimensions;
+  const springX = useSpring(x, { stiffness: 50, damping: 20 });
+  const totalWidth = GALLERY_IMAGES.length * (cardWidth + gap);
+
+  // Infinite looping listener
+  useEffect(() => {
+    const unsubscribe = x.on("change", (latest) => {
+      if (latest < -totalWidth) {
+        x.set(latest + totalWidth);
+      } else if (latest > totalWidth) {
+        x.set(latest - totalWidth);
+      }
+    });
+    return () => unsubscribe();
+  }, [x, totalWidth]);
+
+  // Autoplay marquee (pauses on hover or dragging)
+  useEffect(() => {
+    if (isHovered || isDragging) return;
+    const controls = setInterval(() => {
+      x.set(x.get() - 0.5);
+    }, 16);
+    return () => clearInterval(controls);
+  }, [isHovered, isDragging, x]);
+
+  // Manual slide control
   const handlePrev = () => {
-    setActiveIndex((prev) => (prev === 0 ? GALLERY_IMAGES.length - 1 : prev - 1));
+    x.set(x.get() + (cardWidth + gap));
+  };
+  const handleNext = () => {
+    x.set(x.get() - (cardWidth + gap));
   };
 
-  const handleNext = () => {
-    setActiveIndex((prev) => (prev === GALLERY_IMAGES.length - 1 ? 0 : prev + 1));
-  };
+  const nestedImages = [...GALLERY_IMAGES, ...GALLERY_IMAGES, ...GALLERY_IMAGES];
 
   return (
-    <section className="py-10 px-6 md:px-8 bg-background border-t border-black/[0.02] overflow-hidden select-none">
-      <div className="max-w-7xl mx-auto text-center">
+    <section 
+      ref={containerRef}
+      className="py-6 md:py-10 bg-background border-t border-black/[0.02] overflow-hidden select-none"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Title Header */}
+      <div className="text-center max-w-2xl mx-auto mb-6 flex flex-col items-center px-6">
+        <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
+          VEER Logistics in Action
+        </h2>
+        <p className="text-dark/60 text-xs sm:text-sm md:text-base mt-3 leading-relaxed max-w-2xl mx-auto">
+          Take a look at our live shipment dispatches, automated packaging lines, and trans-continental flight transfers.
+        </p>
+      </div>
+
+      {/* The 3D Stage */}
+      <div 
+        className="relative w-full h-[180px] md:h-[420px] flex items-center justify-center overflow-hidden" 
+        style={{ perspective: "1200px", perspectiveOrigin: "center 50%" }}
+      >
+        <motion.div 
+          style={{ x: springX, transformStyle: "preserve-3d" }}
+          className="flex gap-4 md:gap-7 cursor-grab active:cursor-grabbing items-center"
+          drag="x"
+          dragConstraints={{ left: -totalWidth, right: totalWidth }}
+          onDragStart={() => setIsDragging(true)}
+          onDragEnd={() => setIsDragging(false)}
+        >
+          {nestedImages.map((item, index) => (
+            <GalleryCard 
+              key={`${item.id}-${index}`} 
+              item={item} 
+              baseX={springX} 
+              index={index}
+              totalItems={nestedImages.length}
+              cardWidth={cardWidth}
+              gap={gap}
+              onCardClick={setSelectedImage}
+            />
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Navigation Controls & Instruction */}
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2 px-6">
+       
         
-        {/* Title Header */}
-        <div className="max-w-2xl mx-auto mb-2 flex flex-col items-center">
-          <span className="text-xs uppercase font-bold text-primary tracking-widest bg-primary/5 px-3.5 py-1.5 rounded-full">
-            Operations Gallery
-          </span>
-          <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
-            VEER Logistics in Action
-          </h2>
-          <p className="text-dark/60 text-sm sm:text-base mt-3 leading-relaxed">
-            Take a look at our live shipment dispatches, automated packaging lines, and trans-continental flight transfers.
-          </p>
-        </div>
-
-        {/* 3D Coverflow Container */}
-        <div className="relative h-[360px] sm:h-[480px] w-full flex items-center justify-center">
-          {GALLERY_IMAGES.map((item, index) => {
-            // Calculate relative offset with looping wrap-around logic
-            let offset = index - activeIndex;
-            if (offset < -GALLERY_IMAGES.length / 2) {
-              offset += GALLERY_IMAGES.length;
-            } else if (offset > GALLERY_IMAGES.length / 2) {
-              offset -= GALLERY_IMAGES.length;
-            }
-
-            const absOffset = Math.abs(offset);
-            
-            // Hide cards that are out of scope (only show center card + 1 neighbor on mobile, + 2 on desktop)
-            const maxVisible = isMobile ? 1 : 2;
-            if (absOffset > maxVisible) return null;
-
-            // Positioning calculations to stack and overlap correctly
-            const xTranslation = isMobile ? offset * 130 : offset * 240;
-            const cardScale = 1 - absOffset * 0.12;
-            const cardOpacity = 1 - absOffset * 0.35;
-            const cardZIndex = 10 - absOffset;
-
-            return (
-              <motion.div
-                key={item.id}
-                style={{
-                  zIndex: cardZIndex,
-                  position: 'absolute',
-                }}
-                animate={{
-                  x: xTranslation,
-                  scale: cardScale,
-                  opacity: cardOpacity,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 30,
-                }}
-                onClick={() => setActiveIndex(index)}
-                className={`relative w-[210px] h-[300px] sm:w-[310px] sm:h-[440px] rounded-[32px] overflow-hidden border border-black/[0.04] bg-neutral-100 flex flex-col justify-end cursor-pointer transition-shadow duration-300 ${
-                  absOffset === 0 
-                    ? 'shadow-[0_20px_50px_rgba(0,0,0,0.15)] ring-1 ring-black/5' 
-                    : 'shadow-lg hover:shadow-xl'
-                }`}
-              >
-                <img
-                  src={item.url}
-                  alt={item.title}
-                  className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none"
-                  loading="lazy"
-                />
-                
-                {/* Ambient dark gradient overlay */}
-                <div className={`absolute inset-0 bg-gradient-to-t from-dark/95 via-dark/30 to-transparent transition-opacity duration-300 ${
-                  absOffset === 0 ? 'opacity-85' : 'opacity-70'
-                }`} />
-
-                {/* Floating Tag (only visible on active card or hovered cards) */}
-                <div className="absolute top-5 left-5 z-10">
-                  <span className="text-[9px] font-bold tracking-widest uppercase bg-white/10 backdrop-blur-md text-white border border-white/10 px-2.5 py-1 rounded-md">
-                    {item.category}
-                  </span>
-                </div>
-
-                {/* Info Text (Fades out when not active/center) */}
-                <div 
-                  className={`absolute bottom-6 left-6 right-6 text-left z-10 transition-all duration-300 ${
-                    absOffset === 0 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
-                  }`}
-                >
-                  <h3 className="font-heading font-bold text-white text-sm sm:text-base leading-tight">
-                    {item.title}
-                  </h3>
-                  <p className="text-white/60 text-xs mt-1.5 font-semibold flex items-center gap-1.5">
-                    <ImageIcon className="w-3.5 h-3.5 text-secondary" />
-                    VEER Operations Hub
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Circular Arrow Navigation Controls at bottom center */}
-        <div className="flex justify-center items-center gap-4 mt-2 sm:mt-2">
+        <div className="flex items-center gap-3">
           <button
             onClick={handlePrev}
-            className="p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
+            className="p-2.5 md:p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
             aria-label="Previous slide"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
           </button>
           
           <button
             onClick={handleNext}
-            className="p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
+            className="p-2.5 md:p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
             aria-label="Next slide"
           >
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
           </button>
         </div>
-
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedImage && renderLightbox(selectedImage, setSelectedImage)}
+      </AnimatePresence>
     </section>
+  );
+}
+
+// 3D Card Component
+function GalleryCard({ item, baseX, index, totalItems, cardWidth, gap, onCardClick }) {
+  // Center alignment logic
+  const initialX = index * (cardWidth + gap);
+  const offset = (totalItems * (cardWidth + gap)) / 2;
+  const screenX = useTransform(baseX, (val) => val + initialX - offset + (cardWidth / 2));
+
+  // 3D Transforms
+  const rotateY = useTransform(screenX, [-800, 0, 800], [35, 0, -35]);
+  const translateZ = useTransform(screenX, [-800, 0, 800], [-180, 40, -180]);
+  const scale = useTransform(screenX, [-800, 0, 800], [0.8, 1.1, 0.8]);
+  const opacity = useTransform(screenX, [-1000, -600, 0, 600, 1000], [0, 0.7, 1, 0.7, 0]);
+
+  return (
+    <motion.div
+      style={{
+        width: cardWidth,
+        rotateY,
+        translateZ,
+        scale,
+        opacity,
+        transformStyle: "preserve-3d",
+      }}
+      onClick={() => onCardClick(item)}
+      className="flex-shrink-0 flex flex-col items-center group pointer-events-auto cursor-pointer"
+    >
+      {/* Banner design card */}
+      <div className="w-full relative aspect-[15/10] md:aspect-[14/10] rounded-[20px] md:rounded-[28px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.1)] border border-black/[0.04] bg-neutral-900">
+        <img 
+          src={item.url} 
+          alt={item.title} 
+          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
+          loading="lazy"
+        />
+        
+        {/* Dark gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark/95 via-dark/45 to-transparent transition-all duration-300" />
+        
+        {/* Category tag */}
+        <div className="absolute top-4 left-4 z-10">
+          <span className="text-[8px] md:text-[9px] font-bold tracking-widest uppercase bg-white/10 backdrop-blur-md text-white border border-white/10 px-2.5 py-1 rounded-full">
+            {item.category}
+          </span>
+        </div>
+
+        {/* Info details */}
+        <div className="absolute bottom-4 left-4 right-4 text-left z-10">
+          <h3 className="font-heading font-extrabold text-white text-xs md:text-base leading-tight mb-1 group-hover:text-secondary transition-colors duration-300">
+            {item.title}
+          </h3>
+          <p className="text-white/60 text-[9px] md:text-[10px] font-semibold flex items-center gap-1">
+            <MapPin className="w-3 h-3 text-secondary" />
+            VEER Operations Hub
+          </p>
+        </div>
+
+        {/* Hover Zoom Indicator */}
+        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.1 }}
+            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg"
+          >
+            <Maximize2 className="w-4 h-4 md:w-5 md:h-5 text-white" />
+          </motion.div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+// Fullscreen Lightbox Helper
+function renderLightbox(selectedImage, setSelectedImage) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 md:p-8"
+      onClick={() => setSelectedImage(null)}
+    >
+      <button
+        onClick={() => setSelectedImage(null)}
+        className="absolute top-6 right-6 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 z-50 active:scale-95"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      <div 
+        className="relative max-w-5xl w-full h-[60vh] md:h-[75vh] flex items-center justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <motion.img
+          key={selectedImage.id}
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.95, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          src={selectedImage.url}
+          alt={selectedImage.title}
+          className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
+        />
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const currentIdx = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
+            const prevIdx = currentIdx === 0 ? GALLERY_IMAGES.length - 1 : currentIdx - 1;
+            setSelectedImage(GALLERY_IMAGES[prevIdx]);
+          }}
+          className="absolute left-2 md:-left-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const currentIdx = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
+            const nextIdx = currentIdx === GALLERY_IMAGES.length - 1 ? 0 : currentIdx + 1;
+            setSelectedImage(GALLERY_IMAGES[nextIdx]);
+          }}
+          className="absolute right-2 md:-right-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
+        >
+          <ArrowRight className="w-6 h-6" />
+        </button>
+      </div>
+
+      <motion.div
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.1 }}
+        className="text-center mt-6 max-w-xl px-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="inline-block text-[10px] font-bold tracking-widest uppercase bg-secondary text-white px-3 py-1 rounded-full">
+          {selectedImage.category}
+        </span>
+        <h3 className="font-heading font-bold text-white text-xl sm:text-2xl mt-3">
+          {selectedImage.title}
+        </h3>
+        <p className="text-white/60 text-xs sm:text-sm mt-1.5 font-semibold flex items-center justify-center gap-1.5">
+          <MapPin className="w-4 h-4 text-secondary" />
+          VEER Operations Hub
+        </p>
+      </motion.div>
+    </motion.div>
   );
 }

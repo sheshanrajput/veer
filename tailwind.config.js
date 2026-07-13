@@ -31,8 +31,8 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        heading: ['Space Grotesk', 'sans-serif'],
-        numbers: ['Sora', 'sans-serif'],
+        heading: ['Inter', 'sans-serif'],
+        numbers: ['Inter', 'sans-serif'],
       },
       borderRadius: {
         'card': '24px',

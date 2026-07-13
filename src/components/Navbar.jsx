@@ -41,13 +41,13 @@ export default function Navbar() {
           isDocked && !isOpen ? '-translate-y-4' : 'translate-y-0'
         }`}
       >
-        <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-md border border-black/15 rounded-full px-6 py-2.5 shadow-xl flex items-center justify-between">
+        <div className="max-w-7xl mx-auto bg-white/90 backdrop-blur-md border border-black/15 rounded-full px-6 py-0.5 shadow-xl flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center group">
             <img 
               src="/veer-international-logo.png" 
               alt="VEER International Logo" 
-              className="h-9 w-auto object-contain hover:scale-102 transition-all duration-300"
+              className="h-12 w-auto object-contain hover:scale-102 transition-all duration-300"
             />
           </Link>
 

@@ -234,9 +234,7 @@ export default function AboutPage() {
         </motion.div>
 
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10 flex flex-col items-center gap-6">
-          <span className="text-xs uppercase font-bold text-secondary tracking-widest bg-secondary/10 px-3.5 py-1.5 rounded-full border border-secondary/20 animate-pulse">
-            Next-Gen Express Cargo
-          </span>
+         
           
           <h2 className="font-heading font-black text-3xl sm:text-5xl lg:text-6xl text-white tracking-tight leading-tight max-w-2xl">
             Ready to Route Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Worldwide Delivery?</span>
