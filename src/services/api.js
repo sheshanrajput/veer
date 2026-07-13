@@ -29,7 +29,11 @@ export const apiService = {
     const formattedNum = trackingNumber.trim().toUpperCase();
     return retryRequest(async () => {
       try {
-        const response = await apiClient.get(`/api/tracking/${formattedNum}`);
+        const apiUrl = process.env.NEXT_PUBLIC_TRACKING_API_URL || 'http://admin.acxintl.in/api/tracking_api/get_tracking_data';
+        const companyId = process.env.NEXT_PUBLIC_TRACKING_COMPANY_ID || '5';
+        const customerCode = process.env.NEXT_PUBLIC_TRACKING_CUSTOMER_CODE || 'T001';
+        
+        const response = await axios.get(`${apiUrl}?api_company_id=${companyId}&customer_code=${customerCode}&tracking_no=${formattedNum}`);
         return { data: response.data, error: null };
       } catch (error) {
         return { 
