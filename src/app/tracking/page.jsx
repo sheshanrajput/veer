@@ -26,10 +26,98 @@ function TrackingPageContent() {
     setError(null);
     setShipment(null);
     
+    // 1. Check Backend API Orders First (Billing ID or Local Tracking ID)
+    try {
+      const res = await fetch('/api/orders');
+      if (res.ok) {
+        const parsedOrders = await res.json();
+        const searchParam = String(number).trim().replace(/^#/, '').toLowerCase();
+        
+        // Fallback: If the searchParam is found anywhere in the order object
+        const localMatch = parsedOrders.find(o => {
+            if (!o) return false;
+            
+            // Format ID for direct comparison
+            const bIdStr = String(o.billingId || "").replace(/^#/, '').trim().toLowerCase();
+            const bIdNum = String(Number(bIdStr));
+            const sIdNum = String(Number(searchParam));
+            
+            // Check direct exact matches on ID
+            if (bIdStr === searchParam || (bIdNum !== "nan" && bIdNum === sIdNum)) return true;
+            if (String(o.trackingId || "").trim().toLowerCase() === searchParam) return true;
+            
+            // Brutal fallback: stringify the whole object
+            const jsonStr = JSON.stringify(o).toLowerCase();
+            return jsonStr.includes(`:"${searchParam}"`) || jsonStr.includes(`:"#${searchParam}"`);
+          });
+          
+          if (localMatch) {
+            setShipment({
+              trackingNumber: localMatch.trackingId || `BILL-${localMatch.billingId}`,
+              status: localMatch.status,
+              currentLocation: "Origin Facility",
+              estimatedDelivery: "TBD",
+              origin: "Admin Portal",
+              receiver: localMatch.orderName,
+              destination: localMatch.mobile,
+              bookedDate: localMatch.createdAt,
+              shipmentType: "Admin Order",
+              weight: "Standard",
+              dimensions: "N/A",
+              history: [
+                {
+                  date: localMatch.createdAt || "Unknown",
+                  time: "10:00",
+                  location: "System",
+                  status: localMatch.status || "Pending",
+                  remarks: localMatch.description || "Order processed via Admin Dashboard"
+                }
+              ]
+            });
+            setLoading(false);
+            return;
+          } else {
+            // DEBUG OVERLAY: If we reached here, localMatch was falsy
+            // Let's force render the first order to see what's actually inside parsedOrders
+            if (parsedOrders && parsedOrders.length > 0) {
+              const debugOrder = parsedOrders[0];
+              setShipment({
+                trackingNumber: `DEBUG-SEARCH-FAIL`,
+                status: `bId='${debugOrder.billingId}' search='${searchParam}'`,
+                currentLocation: JSON.stringify(debugOrder).substring(0, 80) + '...',
+                estimatedDelivery: "DEBUG",
+                origin: "DEBUG",
+                receiver: "DEBUG",
+                destination: "DEBUG",
+                bookedDate: "DEBUG",
+                shipmentType: "DEBUG",
+                weight: "DEBUG",
+                dimensions: "DEBUG",
+                history: [
+                  {
+                    date: "DEBUG",
+                    time: "00:00",
+                    location: "DEBUG",
+                    status: "DEBUG",
+                    remarks: "DEBUG"
+                  }
+                ]
+              });
+              setLoading(false);
+              return;
+            }
+          }
+      }
+    } catch (e) {
+      console.error("Error fetching orders from API for tracking", e);
+    }
+    
+    // 2. Fallback to External API
     const { data, error: apiError } = await apiService.getTrackingDetails(number);
     
+    // Inject debug info into the error message
     if (apiError) {
-      setError(apiError);
+      setError(apiError + " | API STORAGE: Could not find " + number);
     } else {
       setShipment(data);
     }
@@ -46,7 +134,11 @@ function TrackingPageContent() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (trackingNumber.trim()) {
-      router.push(`/tracking?num=${trackingNumber.trim()}`);
+      if (trackingNumber.trim() === numParam) {
+        fetchTracking(trackingNumber.trim());
+      } else {
+        router.push(`/tracking?num=${trackingNumber.trim()}`);
+      }
     }
   };
 
@@ -67,19 +159,21 @@ function TrackingPageContent() {
           </p>
 
           {/* Search Bar Form */}
-          <form onSubmit={handleSubmit} className="w-full max-w-2xl mt-8">
+          <form onSubmit={handleSubmit} className="w-full max-w-2xl mt-8" suppressHydrationWarning>
             <div className="relative flex items-center bg-white/10 border border-white/10 rounded-2xl p-2 backdrop-blur-md">
               <Search className="w-5 h-5 text-white/40 ml-3" />
               <input
                 type="text"
-                placeholder="Enter Tracking ID (e.g. VR777888999IN)"
+                placeholder="Enter Tracking ID or Billing ID (e.g. 001)"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 className="w-full bg-transparent border-0 outline-none text-white placeholder-white/40 px-3 py-3 font-mono text-sm"
+                suppressHydrationWarning
               />
               <button
                 type="submit"
                 className="btn-primary py-2.5 px-6 shrink-0 rounded-xl"
+                suppressHydrationWarning
               >
                 Track Now
               </button>
@@ -113,8 +207,25 @@ function TrackingPageContent() {
               <h2 className="font-heading font-bold text-2xl text-dark">Shipment Not Found</h2>
               <p className="text-dark/60 text-sm mt-2 max-w-md leading-relaxed">
                 We couldn't retrieve records for <code className="font-mono text-primary font-bold">{trackingNumber}</code>. 
-                Please verify the ID format (starts with VR, ends with IN) or call our help desk.
               </p>
+              {typeof error === "string" && (
+                <div className="text-error/80 text-xs mt-4 max-w-md leading-relaxed border border-error/20 bg-error/5 p-4 rounded-lg break-all">
+                  <p className="font-bold mb-2 text-error">DEBUG INFO: {error}</p>
+                  {error.includes("EMPTY/NULL") && (
+                    <div className="mt-2 text-dark/70 bg-white/50 p-2 rounded">
+                      <strong className="text-dark">Why is this happening?</strong><br/>
+                      The browser's local database is completely empty on this tab. This happens if:
+                      <ul className="list-disc pl-4 mt-1">
+                        <li>You are testing the Admin panel in an <b>Incognito/Private window</b>, but tracking in a normal window (they do not share data).</li>
+                        <li>You are using <b>127.0.0.1:3000</b> for Admin and <b>localhost:3000</b> for Tracking (these are treated as different websites).</li>
+                        <li>Your browser's security settings are blocking cross-tab storage.</li>
+                      </ul>
+                      <br/>
+                      <b>Quick Fix:</b> Open the Admin panel in a new tab <i>right next to this one</i> in the exact same browser window, create the order, and try again!
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             
             {/* Direct Support details */}
