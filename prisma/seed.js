@@ -4,31 +4,29 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-  const username = 'admin';
-  const plainPassword = 'Admin@123';
-  const hashedPassword = await bcrypt.hash(plainPassword, 10);
+  const email = 'admin@veer.com'; // Using email format for username
+  const password = 'password123';
 
-  // Upsert the admin user
+  // Check if admin already exists
   const existingAdmin = await prisma.admin.findUnique({
-    where: { username },
+    where: {
+      username: email
+    }
   });
 
-  if (existingAdmin) {
-    console.log('Admin user already exists. Updating password...');
-    await prisma.admin.update({
-      where: { id: existingAdmin.id },
-      data: { password: hashedPassword },
-    });
-  } else {
-    console.log('Creating admin user...');
+  if (!existingAdmin) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
     await prisma.admin.create({
       data: {
-        username,
+        username: email,
         password: hashedPassword,
       },
     });
+    console.log(`Admin user created: ${email} / ${password}`);
+  } else {
+    console.log('Admin user already exists.');
   }
-  console.log('Seed completed successfully.');
 }
 
 main()

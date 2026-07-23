@@ -41,3 +41,18 @@ model Gallery {
 
   @@map("gallery")
 }
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  billingId   String   @unique @map("billing_id")
+  trackingId  String?  @map("tracking_id")
+  orderName   String   @map("order_name")
+  mobile      String?
+  orderEmail  String?  @map("order_email")
+  description String?  @db.Text
+  status      String   @default("Pending")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("orders")
+}

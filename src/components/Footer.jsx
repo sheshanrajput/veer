@@ -41,7 +41,7 @@ export default function Footer() {
             </p>
             
             {/* Newsletter */}
-            <form onSubmit={handleSubscribe} className="flex flex-col gap-3 mt-2">
+            <form onSubmit={handleSubscribe} className="flex flex-col gap-3 mt-2" suppressHydrationWarning>
               <span className="text-sm font-semibold text-white/90">Subscribe to our newsletter</span>
               <div className="relative">
                 <input
@@ -51,11 +51,13 @@ export default function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-4 pr-12 text-sm text-white placeholder-white/40 focus:outline-none focus:border-secondary transition-colors"
                   required
+                  suppressHydrationWarning
                 />
                 <button
                   type="submit"
                   className="absolute right-2 top-2 p-1.5 rounded-lg bg-primary hover:bg-primary-dark transition-colors text-white"
                   aria-label="Subscribe"
+                  suppressHydrationWarning
                 >
                   <ArrowRight className="w-4 h-4" />
                 </button>
