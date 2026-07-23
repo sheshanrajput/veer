@@ -27,7 +27,7 @@ export const NAV_LINKS = [
   { name: "Services", path: "/services" },
   { name: "Tracking", path: "/tracking" },
   { name: "About Us", path: "/about" },
-  { name: "Request Quote", path: "/inquiry" },
+  { name: "Gallery", path: "/gallery" },
   { name: "Contact", path: "/contact" }
 ];
 

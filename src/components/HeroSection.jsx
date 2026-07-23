@@ -103,7 +103,7 @@ function ActionButtons() {
   return (
     <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-row sm:gap-4 mb-2 mt-2 w-full sm:w-auto">
       <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
-        <Link href="/inquiry" className="btn-primary w-full sm:w-auto text-center block shadow-lg shadow-secondary/15">
+        <Link href="/contact" className="btn-primary w-full sm:w-auto text-center block shadow-lg shadow-secondary/15">
           Book Pickup
         </Link>
       </motion.div>

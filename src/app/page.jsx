@@ -403,7 +403,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4 w-full sm:w-auto px-4 sm:px-0">
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }} className="w-full sm:w-auto">
               <Link
-                href="/inquiry"
+                href="/contact"
                 className="btn-secondary w-full text-center block shadow-lg shadow-secondary/20"
               >
                 Book Your Shipment Now

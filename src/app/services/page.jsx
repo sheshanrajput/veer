@@ -74,7 +74,7 @@ export default function ServicesPage() {
 
                 <div className="p-6 pt-0">
                   <Link
-                    href={`/inquiry?service=${service.id}`}
+                    href={`/contact?service=${service.id}`}
                     className="btn-primary w-full flex items-center justify-center gap-2"
                   >
                     Book This Shipment
@@ -128,7 +128,7 @@ export default function ServicesPage() {
 
           <div className="flex gap-4 w-full lg:w-auto shrink-0 flex-wrap">
             <Link
-              href="/inquiry"
+              href="/contact"
               className="btn-primary w-full sm:w-auto text-center"
             >
               Get Custom Quote

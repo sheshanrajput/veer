@@ -1,10 +1,8 @@
 import { Space_Grotesk, Inter, Sora } from 'next/font/google';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import WhatsAppButton from '@/components/WhatsAppButton';
-import LenisProvider from '@/components/LenisProvider';
+import ClientLayoutWrapper from '@/components/ClientLayoutWrapper';
 import '@/app/globals.css';
 import { BRAND_NAME, BRAND_DESCRIPTION } from '@/constants';
+
 
 export const metadata = {
   metadataBase: new URL('https://veerlogistics.com'),
@@ -102,14 +100,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="antialiased overflow-x-hidden">
-        <LenisProvider>
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-          <WhatsAppButton />
-        </LenisProvider>
+        <ClientLayoutWrapper>
+          {children}
+        </ClientLayoutWrapper>
       </body>
     </html>
   );
