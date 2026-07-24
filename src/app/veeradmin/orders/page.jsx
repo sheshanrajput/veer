@@ -6,30 +6,21 @@ import {
   Package, 
   Search, 
   Plus, 
-  MoreVertical, 
   CheckCircle2, 
   Clock, 
   Truck, 
   CheckSquare,
   X,
-  Lock,
   Mail,
   Phone,
-  LogOut,
   Eye,
   Edit,
   Trash2,
   AlertTriangle
 } from "lucide-react";
 
-export default function AdminPage() {
+export default function OrdersPage() {
   const [isMounted, setIsMounted] = useState(false);
-  
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState("");
-
   const [orders, setOrders] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
   
@@ -40,11 +31,9 @@ export default function AdminPage() {
   
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState(null);
-  
-  // Form State
+
   const defaultForm = {
     orderName: "",
-    trackingId: "",
     mobile: "",
     orderEmail: "",
     description: "",
@@ -54,9 +43,6 @@ export default function AdminPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    const storedAuth = localStorage.getItem("adminAuth");
-    if (storedAuth === "true") setIsLoggedIn(true);
-    
     const loadOrders = async () => {
       try {
         const res = await fetch('/api/orders');
@@ -73,13 +59,6 @@ export default function AdminPage() {
   }, []);
 
   useEffect(() => {
-    if (isMounted) {
-      if (isLoggedIn) localStorage.setItem("adminAuth", "true");
-      else localStorage.removeItem("adminAuth");
-    }
-  }, [isLoggedIn, isMounted]);
-
-  useEffect(() => {
     if (isMounted && isInitialized) {
       // Save to API
       fetch('/api/orders', {
@@ -87,9 +66,6 @@ export default function AdminPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orders)
       }).catch(e => console.error("Error saving orders to API", e));
-      
-      // Keep localStorage as a backup
-      localStorage.setItem("adminOrders", JSON.stringify(orders));
     }
   }, [orders, isMounted, isInitialized]);
 
@@ -156,12 +132,6 @@ export default function AdminPage() {
     setOrderToDelete(null);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setEmail("");
-    setPassword("");
-  };
-
   const getStatusColor = (status) => {
     switch (status) {
       case "Pending": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
@@ -182,73 +152,13 @@ export default function AdminPage() {
     }
   };
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (email === "admin@veer.com" && password === "password123") {
-      setIsLoggedIn(true);
-      setLoginError("");
-    } else {
-      setLoginError("Invalid email or password");
-    }
-  };
-
-  if (!isMounted) return <div className="min-h-screen bg-neutral-950"></div>;
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4 pt-28">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-neutral-900 border border-neutral-800 p-8 rounded-2xl w-full max-w-md shadow-2xl"
-        >
-          <div className="flex justify-center mb-6">
-            <div className="bg-orange-500/10 p-3 rounded-full">
-              <Lock className="w-8 h-8 text-orange-500" />
-            </div>
-          </div>
-          <h1 className="text-2xl font-medium text-white text-center mb-2">Admin Access</h1>
-          <p className="text-neutral-500 text-center mb-8">Please enter the master password to continue</p>
-          
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                required
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors mb-4"
-              />
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                required
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors"
-              />
-              {loginError && (
-                <p className="text-red-500 text-sm mt-3 text-center">{loginError}</p>
-              )}
-            </div>
-            <button 
-              type="submit"
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-xl transition-colors mt-2"
-            >
-              Sign In
-            </button>
-          </form>
-        </motion.div>
-      </div>
-    );
-  }
+  if (!isMounted) return <div className="min-h-screen"></div>;
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-200 p-6 pt-28 md:p-12 md:pt-28 font-sans selection:bg-orange-500/30">
+    <div className="font-sans text-neutral-200">
       
       {/* Header */}
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
           <h1 className="text-3xl font-light text-white tracking-tight flex items-center">
             <span className="bg-orange-500 text-white p-2 rounded-lg mr-4">
@@ -261,13 +171,6 @@ export default function AdminPage() {
         
         <div className="flex space-x-3">
           <button 
-            onClick={handleLogout}
-            className="bg-neutral-900 border border-neutral-800 text-neutral-300 px-4 py-3 rounded-full font-medium hover:text-white hover:bg-neutral-800 transition-colors flex items-center"
-          >
-            <LogOut className="w-5 h-5 md:mr-2" />
-            <span className="hidden md:inline">Logout</span>
-          </button>
-          <button 
             onClick={handleCreateClick}
             className="bg-white text-black px-6 py-3 rounded-full font-medium hover:bg-neutral-200 transition-colors flex items-center shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
           >
@@ -278,7 +181,7 @@ export default function AdminPage() {
       </div>
 
       {/* Main Content Area - Listing Format */}
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         {orders.length === 0 ? (
           <div className="border border-neutral-800 border-dashed rounded-2xl p-16 text-center flex flex-col items-center justify-center bg-neutral-900/30 backdrop-blur-sm">
             <Package className="w-16 h-16 text-neutral-700 mb-4" />
