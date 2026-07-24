@@ -1,75 +1,86 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
-import { ArrowRight, ArrowLeft, MapPin, Maximize2, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Play, X, MapPin, Maximize2, Loader2, Video } from "lucide-react";
+import Link from "next/link";
 
-const GALLERY_IMAGES = [
+const DEFAULT_GALLERY = [
   {
-    id: 1,
-    title: "Air Freight Wing & Transit",
-    category: "Air Cargo",
-    url: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    title: "Warehouse Distribution Hub",
-    category: "Storage",
-    url: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    title: "Express Road Logistics",
-    category: "Transit Route",
-    url: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 4,
-    title: "Seaport Container Dock",
-    category: "Ocean Freight",
-    url: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 5,
-    title: "Secure Package Sorting",
-    category: "Packaging",
-    url: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 6,
-    title: "Global Supply Solutions",
-    category: "Logistics Desk",
-    url: "https://images.unsplash.com/photo-1521791136368-1a8682707636?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 7,
-    title: "Cargo Aircraft Fleet",
+    id: "default-1",
+    title: "Air Cargo Loading Operations",
     category: "Air Fleet",
-    url: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&w=800&q=80",
+    image: "https://assets.mixkit.co/videos/preview/mixkit-cargo-plane-unloading-at-the-airport-40030-large.mp4"
   },
   {
-    id: 8,
-    title: "Global Cargo Carrier",
+    id: "default-2",
+    title: "Seaport Container Logistics",
     category: "Ocean Cargo",
-    url: "https://images.unsplash.com/photo-1506015391300-4802dc74de2e?auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "default-3",
+    title: "Automated Package Sorting",
+    category: "Packaging",
+    image: "https://assets.mixkit.co/videos/preview/mixkit-worker-scanning-boxes-in-a-warehouse-40019-large.mp4"
+  },
+  {
+    id: "default-4",
+    title: "Express Road Carrier Fleet",
+    category: "Transit Route",
+    image: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "default-5",
+    title: "Global Ocean Freight Carrier",
+    category: "Ocean Freight",
+    image: "https://assets.mixkit.co/videos/preview/mixkit-large-cargo-container-ship-sailing-in-the-sea-40035-large.mp4"
+  },
+  {
+    id: "default-6",
+    title: "Distribution Center Sorting Hub",
+    category: "Storage",
+    image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "default-7",
+    title: "Express Air Freight Flight Cargo",
+    category: "Air Fleet",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "default-8",
+    title: "Global Supply Chain Operations",
+    category: "Operations Desk",
+    image: "https://images.unsplash.com/photo-1521791136368-1a8682707636?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    id: "default-9",
+    title: "Secure Warehouse Sorting Lines",
+    category: "Packaging",
+    image: "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?auto=format&fit=crop&w=800&q=80"
   }
 ];
 
-export default function GallerySection() {
-  const x = useMotionValue(0);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [dimensions, setDimensions] = useState({ cardWidth: 340, gap: 28 });
-  const [selectedImage, setSelectedImage] = useState(null);
-  const containerRef = useRef(null);
+const isVideoFile = (url) => {
+  if (!url) return false;
+  if (url.includes('mixkit.co') || url.includes('video')) return true;
+  const ext = url.split('.').pop().toLowerCase();
+  return ['mp4', 'webm', 'ogg', 'mov'].includes(ext);
+};
 
-  // Responsive settings
+export default function GallerySection() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [columnCount, setColumnCount] = useState(3);
+
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setDimensions({ cardWidth: 220, gap: 16 });
+        setColumnCount(2);
       } else {
-        setDimensions({ cardWidth: 340, gap: 28 });
+        setColumnCount(3);
       }
     };
     handleResize();
@@ -77,262 +88,267 @@ export default function GallerySection() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const { cardWidth, gap } = dimensions;
-  const springX = useSpring(x, { stiffness: 50, damping: 20 });
-  const totalWidth = GALLERY_IMAGES.length * (cardWidth + gap);
-
-  // Infinite looping listener
   useEffect(() => {
-    const unsubscribe = x.on("change", (latest) => {
-      if (latest < -totalWidth) {
-        x.set(latest + totalWidth);
-      } else if (latest > totalWidth) {
-        x.set(latest - totalWidth);
+    async function fetchGallery() {
+      try {
+        const res = await fetch("/api/gallery?page=1&limit=9");
+        const data = await res.json();
+        if (data.success && data.images && data.images.length > 0) {
+          let combined = [...data.images];
+          if (combined.length < 9) {
+            const needed = 9 - combined.length;
+            combined = [...combined, ...DEFAULT_GALLERY.slice(0, needed)];
+          }
+          setItems(combined.slice(0, 9));
+        } else {
+          setItems(DEFAULT_GALLERY);
+        }
+      } catch (err) {
+        console.error("Error fetching gallery items:", err);
+        setItems(DEFAULT_GALLERY);
+      } finally {
+        setLoading(false);
       }
+    }
+    fetchGallery();
+  }, []);
+
+  const getColumns = (colsCount) => {
+    const cols = Array.from({ length: colsCount }, () => []);
+    items.forEach((item, index) => {
+      cols[index % colsCount].push({ item, index });
     });
-    return () => unsubscribe();
-  }, [x, totalWidth]);
-
-  // Autoplay marquee (pauses on hover or dragging)
-  useEffect(() => {
-    if (isHovered || isDragging) return;
-    const controls = setInterval(() => {
-      x.set(x.get() - 0.5);
-    }, 16);
-    return () => clearInterval(controls);
-  }, [isHovered, isDragging, x]);
-
-  // Manual slide control
-  const handlePrev = () => {
-    x.set(x.get() + (cardWidth + gap));
+    return cols;
   };
-  const handleNext = () => {
-    x.set(x.get() - (cardWidth + gap));
-  };
-
-  const nestedImages = [...GALLERY_IMAGES, ...GALLERY_IMAGES, ...GALLERY_IMAGES];
 
   return (
-    <section 
-      ref={containerRef}
-      className="py-6 md:py-10 bg-background border-t border-black/[0.02] overflow-hidden select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      {/* Title Header */}
-      <div className="text-center max-w-2xl mx-auto mb-6 flex flex-col items-center px-6">
-        <h2 className="font-heading font-bold text-2xl sm:text-4xl md:text-5xl text-dark mt-4">
-          VEER Logistics in Action
-        </h2>
-        <p className="text-dark/60 text-xs sm:text-sm md:text-base mt-3 leading-relaxed max-w-2xl mx-auto">
-          Take a look at our live shipment dispatches, automated packaging lines, and trans-continental flight transfers.
-        </p>
-      </div>
-
-      {/* The 3D Stage */}
-      <div 
-        className="relative w-full h-[180px] md:h-[420px] flex items-center justify-center overflow-hidden" 
-        style={{ perspective: "1200px", perspectiveOrigin: "center 50%" }}
-      >
-        <motion.div 
-          style={{ x: springX, transformStyle: "preserve-3d" }}
-          className="flex gap-4 md:gap-7 cursor-grab active:cursor-grabbing items-center"
-          drag="x"
-          dragConstraints={{ left: -totalWidth, right: totalWidth }}
-          onDragStart={() => setIsDragging(true)}
-          onDragEnd={() => setIsDragging(false)}
-        >
-          {nestedImages.map((item, index) => (
-            <GalleryCard 
-              key={`${item.id}-${index}`} 
-              item={item} 
-              baseX={springX} 
-              index={index}
-              totalItems={nestedImages.length}
-              cardWidth={cardWidth}
-              gap={gap}
-              onCardClick={setSelectedImage}
-            />
-          ))}
-        </motion.div>
-      </div>
-
-      {/* Navigation Controls & Instruction */}
-      <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2 px-6">
-       
+    <section className="py-20 bg-slate-50/30 border-t border-black/[0.02] overflow-hidden select-none">
+      <div className="max-w-7xl mx-auto px-6 md:px-8">
         
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handlePrev}
-            className="p-2.5 md:p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
-            aria-label="Previous slide"
-          >
-            <ArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
-          </button>
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 mb-8">
+          <div className="max-w-2xl text-left">
+            
+            <h2 className="font-heading font-black text-2xl sm:text-4xl md:text-5xl text-dark tracking-tight leading-none">
+              VEER Logistics in Action
+            </h2>
+            <p className="text-dark/60 text-sm md:text-base mt-4 leading-relaxed">
+              Explore live snapshots of our logistics operations. Witness our trans-continental air cargo routing, high-capacity container vessels, and automated warehouse sorting centers.
+            </p>
+          </div>
           
-          <button
-            onClick={handleNext}
-            className="p-2.5 md:p-3.5 rounded-full border border-black/10 hover:bg-black/[0.04] active:scale-95 transition-all text-dark shadow-sm bg-white"
-            aria-label="Next slide"
-          >
-            <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
-          </button>
+          
         </div>
+
+        {/* Bento Grid / Masonry Collage */}
+        {loading ? (
+          <div className="py-20 flex flex-col items-center justify-center gap-3 text-dark/40">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+            <span className="text-sm font-semibold">Loading media collage...</span>
+          </div>
+        ) : (
+          <div className="relative mt-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+              {getColumns(columnCount).map((col, colIdx) => (
+                <div key={colIdx} className="flex flex-col gap-4">
+                  {col.map(({ item, index }) => {
+                    const isVideo = isVideoFile(item.image);
+                    const isBlurred = index >= 6; // 7th, 8th, 9th elements are blurred
+                    
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.5, delay: colIdx * 0.1 }}
+                        onClick={() => {
+                          if (!isBlurred) {
+                            setSelectedItem(item);
+                          }
+                        }}
+                        className={`group relative overflow-hidden rounded-[20px] border border-black/[0.04] bg-neutral-900 shadow-premium transition-all duration-500 ${
+                          isBlurred 
+                            ? "opacity-35 blur-[5px] select-none pointer-events-none" 
+                            : "hover:shadow-premium-hover cursor-pointer"
+                        }`}
+                      >
+                        {/* Media Content */}
+                        {isVideo ? (
+                          <div className="w-full aspect-video sm:aspect-square relative overflow-hidden flex items-center justify-center bg-black">
+                            {/* Blurred background backup */}
+                            <video
+                              src={item.image}
+                              className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none"
+                              muted
+                              loop
+                              autoPlay
+                              playsInline
+                            />
+                            {/* Main full video */}
+                            <video
+                              src={item.image}
+                              className="relative z-10 max-w-full max-h-full object-contain"
+                              autoPlay
+                              loop
+                              muted
+                              playsInline
+                              preload="metadata"
+                            />
+                            {/* Floating Play Indicator */}
+                            {!isBlurred && (
+                              <div className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center justify-center text-white">
+                                <Play size={12} className="fill-current text-white ml-0.5" />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="w-full h-auto relative overflow-hidden flex items-center justify-center bg-black">
+                            {/* Blurred background backup */}
+                            <img
+                              src={item.image}
+                              alt=""
+                              className="absolute inset-0 w-full h-full object-cover blur-md opacity-40 scale-110 pointer-events-none"
+                            />
+                            {/* Main full image */}
+                            <img
+                              src={item.image}
+                              alt={item.title}
+                              className="relative z-10 w-full h-auto max-h-[280px] sm:max-h-[340px] object-contain transition-transform duration-700 ease-out group-hover:scale-102"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+
+                        {/* Dark Elegant Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-dark/95 via-dark/30 to-transparent transition-opacity duration-300" />
+
+                        {/* Text Details Overlay */}
+                        <div className="absolute bottom-4 left-4 right-4 z-10 text-left transform transition-transform duration-300 group-hover:-translate-y-1">
+                          <span className="text-[7px] md:text-[9px] text-secondary uppercase tracking-widest block mb-1">
+                            {item.category || "Transit Operations"}
+                          </span>
+                          <h3 className="font-heading font-extrabold text-white text-xs md:text-sm leading-tight">
+                            {item.title}
+                          </h3>
+                          <p className="text-white/60 text-[9px] md:text-[10px] font-medium items-center gap-1 mt-1.5 hidden sm:flex">
+                            <MapPin className="w-2.5 h-2.5 text-secondary" />
+                            VEER Operations
+                          </p>
+                        </div>
+
+                        {/* Hover Magnify Overlay */}
+                        {!isBlurred && (
+                          <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <div className="rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300 w-10 h-10">
+                              <Maximize2 className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* Blurred Fade-out Bottom Overlay with see more button */}
+            <div className="absolute bottom-0 left-0 right-0 h-72 bg-gradient-to-t from-white via-white/80 to-transparent flex flex-col items-center justify-end pb-10 pointer-events-auto z-20">
+              <Link
+                href="/gallery"
+                className="group btn-primary px-8 py-4 rounded-2xl shadow-xl shadow-primary/20 flex items-center gap-3 text-sm font-bold hover:scale-105 transition-transform"
+              >
+                Explore Full Gallery
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal */}
       <AnimatePresence>
-        {selectedImage && renderLightbox(selectedImage, setSelectedImage)}
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 md:p-8 cursor-zoom-out"
+            onClick={() => setSelectedItem(null)}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedItem(null)}
+              className="absolute top-6 right-6 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 z-50 active:scale-95 shadow-xl"
+              aria-label="Close media viewer"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Media Content Stage */}
+            <div
+              className="w-full max-w-5xl max-h-[70vh] flex items-center justify-center relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {isVideoFile(selectedItem.image) ? (
+                <video
+                  src={selectedItem.image}
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-[70vh] object-contain rounded-2xl shadow-2xl border border-white/5"
+                />
+              ) : (
+                <img
+                  src={selectedItem.image}
+                  alt={selectedItem.title}
+                  className="max-w-full max-h-[70vh] object-contain rounded-2xl shadow-2xl border border-white/5"
+                />
+              )}
+
+              {/* Prev / Next buttons inside lightbox */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIdx = items.findIndex(img => img.id === selectedItem.id);
+                  const prevIdx = currentIdx === 0 ? items.length - 1 : currentIdx - 1;
+                  setSelectedItem(items[prevIdx]);
+                }}
+                className="absolute left-2 md:-left-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
+              >
+                <ArrowRight className="w-6 h-6 rotate-180" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  const currentIdx = items.findIndex(img => img.id === selectedItem.id);
+                  const nextIdx = currentIdx === items.length - 1 ? 0 : currentIdx + 1;
+                  setSelectedItem(items[nextIdx]);
+                }}
+                className="absolute right-2 md:-right-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
+              >
+                <ArrowRight className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Info details under stage */}
+            <div 
+              className="mt-6 text-center space-y-2 pointer-events-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="px-3.5 py-1.5 bg-white/5 rounded-full text-xs font-bold text-secondary uppercase tracking-widest border border-white/5 inline-block">
+                {selectedItem.category || "Transit Operations"}
+              </span>
+              <h3 className="text-xl font-bold text-white max-w-xl px-4">
+                {selectedItem.title}
+              </h3>
+              <p className="text-white/60 text-xs sm:text-sm mt-1 font-semibold flex items-center justify-center gap-1.5">
+                <MapPin className="w-4 h-4 text-secondary" />
+                Ahmedabad Airport Hub
+              </p>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </section>
-  );
-}
-
-// 3D Card Component
-function GalleryCard({ item, baseX, index, totalItems, cardWidth, gap, onCardClick }) {
-  // Center alignment logic
-  const initialX = index * (cardWidth + gap);
-  const offset = (totalItems * (cardWidth + gap)) / 2;
-  const screenX = useTransform(baseX, (val) => val + initialX - offset + (cardWidth / 2));
-
-  // 3D Transforms
-  const rotateY = useTransform(screenX, [-800, 0, 800], [35, 0, -35]);
-  const translateZ = useTransform(screenX, [-800, 0, 800], [-180, 40, -180]);
-  const scale = useTransform(screenX, [-800, 0, 800], [0.8, 1.1, 0.8]);
-  const opacity = useTransform(screenX, [-1000, -600, 0, 600, 1000], [0, 0.7, 1, 0.7, 0]);
-
-  return (
-    <motion.div
-      style={{
-        width: cardWidth,
-        rotateY,
-        translateZ,
-        scale,
-        opacity,
-        transformStyle: "preserve-3d",
-      }}
-      onClick={() => onCardClick(item)}
-      className="flex-shrink-0 flex flex-col items-center group pointer-events-auto cursor-pointer"
-    >
-      {/* Banner design card */}
-      <div className="w-full relative aspect-[15/10] md:aspect-[14/10] rounded-[20px] md:rounded-[28px] overflow-hidden shadow-[0_12px_32px_rgba(0,0,0,0.1)] border border-black/[0.04] bg-neutral-900">
-        <img 
-          src={item.url} 
-          alt={item.title} 
-          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 select-none pointer-events-none"
-          loading="lazy"
-        />
-        
-        {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark/95 via-dark/45 to-transparent transition-all duration-300" />
-        
-        {/* Category tag */}
-        <div className="absolute top-4 left-4 z-10">
-          <span className="text-[8px] md:text-[9px] font-bold tracking-widest uppercase bg-white/10 backdrop-blur-md text-white border border-white/10 px-2.5 py-1 rounded-full">
-            {item.category}
-          </span>
-        </div>
-
-        {/* Info details */}
-        <div className="absolute bottom-4 left-4 right-4 text-left z-10">
-          <h3 className="font-heading font-extrabold text-white text-xs md:text-base leading-tight mb-1 group-hover:text-secondary transition-colors duration-300">
-            {item.title}
-          </h3>
-          <p className="text-white/60 text-[9px] md:text-[10px] font-semibold flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-secondary" />
-            VEER Operations Hub
-          </p>
-        </div>
-
-        {/* Hover Zoom Indicator */}
-        <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-20">
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            whileHover={{ scale: 1.1 }}
-            className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-lg"
-          >
-            <Maximize2 className="w-4 h-4 md:w-5 md:h-5 text-white" />
-          </motion.div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// Fullscreen Lightbox Helper
-function renderLightbox(selectedImage, setSelectedImage) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 md:p-8"
-      onClick={() => setSelectedImage(null)}
-    >
-      <button
-        onClick={() => setSelectedImage(null)}
-        className="absolute top-6 right-6 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 z-50 active:scale-95"
-      >
-        <X className="w-6 h-6" />
-      </button>
-
-      <div 
-        className="relative max-w-5xl w-full h-[60vh] md:h-[75vh] flex items-center justify-center"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <motion.img
-          key={selectedImage.id}
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          src={selectedImage.url}
-          alt={selectedImage.title}
-          className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-        />
-
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            const currentIdx = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
-            const prevIdx = currentIdx === 0 ? GALLERY_IMAGES.length - 1 : currentIdx - 1;
-            setSelectedImage(GALLERY_IMAGES[prevIdx]);
-          }}
-          className="absolute left-2 md:-left-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            const currentIdx = GALLERY_IMAGES.findIndex(img => img.id === selectedImage.id);
-            const nextIdx = currentIdx === GALLERY_IMAGES.length - 1 ? 0 : currentIdx + 1;
-            setSelectedImage(GALLERY_IMAGES[nextIdx]);
-          }}
-          className="absolute right-2 md:-right-16 p-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all duration-300 active:scale-90"
-        >
-          <ArrowRight className="w-6 h-6" />
-        </button>
-      </div>
-
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="text-center mt-6 max-w-xl px-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <span className="inline-block text-[10px] font-bold tracking-widest uppercase bg-secondary text-white px-3 py-1 rounded-full">
-          {selectedImage.category}
-        </span>
-        <h3 className="font-heading font-bold text-white text-xl sm:text-2xl mt-3">
-          {selectedImage.title}
-        </h3>
-        <p className="text-white/60 text-xs sm:text-sm mt-1.5 font-semibold flex items-center justify-center gap-1.5">
-          <MapPin className="w-4 h-4 text-secondary" />
-          VEER Operations Hub
-        </p>
-      </motion.div>
-    </motion.div>
   );
 }

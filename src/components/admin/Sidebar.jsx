@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, FileText, Image as ImageIcon, LogOut, X, Package } from 'lucide-react';
+import { LayoutDashboard, FileText, Image as ImageIcon, LogOut, X, Package, MessageSquare, HelpCircle, Sliders } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -11,9 +11,12 @@ export default function Sidebar({ isOpen, onClose }) {
 
   const menuItems = [
     { name: 'Dashboard', path: '/veeradmin/dashboard', icon: LayoutDashboard },
+    { name: 'Hero Slider', path: '/veeradmin/hero-slides', icon: Sliders },
     { name: 'Services', path: '/veeradmin/services', icon: FileText },
     { name: 'Gallery', path: '/veeradmin/gallery', icon: ImageIcon },
     { name: 'Orders', path: '/veeradmin/orders', icon: Package },
+    { name: 'Testimonials', path: '/veeradmin/testimonials', icon: MessageSquare },
+    { name: 'FAQs', path: '/veeradmin/faqs', icon: HelpCircle },
   ];
 
   const handleLogout = async () => {

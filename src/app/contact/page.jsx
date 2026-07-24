@@ -1,8 +1,9 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { 
   Phone, Mail, MapPin, Clock, MessageSquare, 
@@ -19,14 +20,51 @@ const contactSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
-export default function ContactPage() {
+function ContactPageContent() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
+  const searchParams = useSearchParams();
+  const serviceParam = searchParams.get('service') || '';
+
+  // Determine standard match
+  let defaultServiceValue = "";
+  if (serviceParam) {
+    const s = serviceParam.toLowerCase();
+    if (s.includes("international")) defaultServiceValue = "international";
+    else if (s.includes("cargo") || s.includes("air")) defaultServiceValue = "air-cargo";
+    else if (s.includes("medicine")) defaultServiceValue = "medicine";
+    else if (s.includes("student")) defaultServiceValue = "student";
+    else if (s.includes("commercial")) defaultServiceValue = "commercial";
+    else defaultServiceValue = "other";
+  }
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
-    resolver: zodResolver(contactSchema)
+    resolver: zodResolver(contactSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      email: "",
+      country: "",
+      service: defaultServiceValue,
+      message: "",
+    }
   });
+
+  // Sync default value if it changes
+  useEffect(() => {
+    if (defaultServiceValue) {
+      reset({
+        name: "",
+        phone: "",
+        email: "",
+        country: "",
+        service: defaultServiceValue,
+        message: "",
+      });
+    }
+  }, [defaultServiceValue, reset]);
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -144,6 +182,7 @@ export default function ContactPage() {
                   <option value="medicine">Medicine Courier</option>
                   <option value="student">Student Cargo</option>
                   <option value="commercial">Commercial/B2B Cargo</option>
+                  <option value="other">Other / Custom Logistics</option>
                 </select>
                 {errors.service && <span className="text-xs text-error">{errors.service.message}</span>}
               </div>
@@ -246,5 +285,19 @@ export default function ContactPage() {
 
       </section>
     </div>
+  );
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-dark text-white flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-lg">Loading contact console...</p>
+        </div>
+      </div>
+    }>
+      <ContactPageContent />
+    </Suspense>
   );
 }

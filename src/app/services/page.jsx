@@ -1,10 +1,56 @@
 "use client";
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { SERVICES, SHIPPING_PROCESS } from '@/constants';
 import Link from 'next/link';
-import { CheckCircle, ArrowRight, ShieldCheck, HelpCircle } from 'lucide-react';
+import { CheckCircle, ArrowRight, ShieldCheck, HelpCircle, Ship, Loader2 } from 'lucide-react';
 
 export default function ServicesPage() {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchDbServices() {
+      try {
+        const res = await fetch('/api/services?status=active&limit=100');
+        const data = await res.json();
+        if (data.success && data.services && data.services.length > 0) {
+          // Map database services to match the layout
+          const mapped = data.services.map((s) => {
+            // Find static counterpart to preserve icons if name aligns, or default to Ship
+            const staticMatch = SERVICES.find(
+              (staticSrv) => staticSrv.id === s.slug || staticSrv.title.toLowerCase() === s.title.toLowerCase()
+            );
+            
+            return {
+              id: s.slug,
+              title: s.title,
+              description: s.shortDescription,
+              image: s.image || '/images/international-courier.svg',
+              benefits: staticMatch?.benefits || [
+                "Customs clearance assistance",
+                "End-to-end real-time tracking",
+                "Express delivery guarantees",
+                "Secure tamper-proof packaging"
+              ],
+              icon: staticMatch?.icon || Ship,
+            };
+          });
+          setServices(mapped);
+        } else {
+          setServices(SERVICES);
+        }
+      } catch (err) {
+        console.error("Error fetching database services:", err);
+        setServices(SERVICES);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDbServices();
+  }, []);
+
   return (
     <div className="bg-background pb-24">
       {/* 1. HERO SECTION */}
@@ -25,66 +71,73 @@ export default function ServicesPage() {
 
       {/* 2. SERVICES GRID */}
       <section className="max-w-7xl mx-auto px-6 md:px-8 py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {SERVICES.map((service, idx) => {
-            const IconComponent = service.icon;
-            return (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: idx % 3 * 0.1 }}
-                className="group bg-white rounded-[24px] border border-black/[0.04] overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between"
-              >
-                <div>
-                  {/* Service Graphic Banner */}
-                  <div className="h-52 overflow-hidden relative">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
-                    
-                    {/* Floating Icon Box */}
-                    <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-white text-primary flex items-center justify-center shadow-lg">
-                      <IconComponent className="w-5 h-5" />
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-dark/40">
+            <Loader2 className="w-10 h-10 animate-spin text-primary" />
+            <span className="text-sm font-medium">Loading premium services...</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {services.map((service, idx) => {
+              const IconComponent = service.icon;
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-50px" }}
+                  transition={{ duration: 0.5, delay: (idx % 3) * 0.1 }}
+                  className="group bg-white rounded-[24px] border border-black/[0.04] overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div>
+                    {/* Service Graphic Banner */}
+                    <div className="h-52 overflow-hidden relative bg-black/5">
+                      <img
+                        src={service.image}
+                        alt={service.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
+                      
+                      {/* Floating Icon Box */}
+                      <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-white text-primary flex items-center justify-center shadow-lg">
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+                    </div>
+
+                    {/* Core Service specs */}
+                    <div className="p-6">
+                      <h2 className="font-heading font-bold text-xl text-dark mb-3">{service.title}</h2>
+                      <p className="text-dark/60 text-sm leading-relaxed mb-6 line-clamp-3">
+                        {service.description}
+                      </p>
+                      
+                      {/* Benefits checklist */}
+                      <ul className="flex flex-col gap-2.5">
+                        {service.benefits.slice(0, 4).map((benefit, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-xs text-dark/70 leading-normal">
+                            <CheckCircle className="w-4 h-4 text-success shrink-0 mt-0.5" />
+                            <span className="line-clamp-1">{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
 
-                  {/* Core Service specs */}
-                  <div className="p-6">
-                    <h2 className="font-heading font-bold text-xl text-dark mb-3">{service.title}</h2>
-                    <p className="text-dark/60 text-sm leading-relaxed mb-6">
-                      {service.description}
-                    </p>
-                    
-                    {/* Benefits checklist */}
-                    <ul className="flex flex-col gap-2.5">
-                      {service.benefits.map((benefit, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-xs text-dark/70 leading-normal">
-                          <CheckCircle className="w-4 h-4 text-success shrink-0 mt-0.5" />
-                          <span>{benefit}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="p-6 pt-0">
+                    <Link
+                      href={`/services/${service.id}`}
+                      className="btn-primary w-full flex items-center justify-center gap-2"
+                    >
+                      View Details
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
-                </div>
-
-                <div className="p-6 pt-0">
-                  <Link
-                    href={`/contact?service=${service.id}`}
-                    className="btn-primary w-full flex items-center justify-center gap-2"
-                  >
-                    Book This Shipment
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* 3. STEP BY STEP TIMELINE */}

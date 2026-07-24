@@ -4,16 +4,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 import { FAQS } from '@/constants';
 
-export default function FAQAccordion() {
+export default function FAQAccordion({ faqs }) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFAQ = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
+  const displayFAQs = faqs && faqs.length > 0 ? faqs : FAQS;
+
   return (
     <div className="flex flex-col gap-4 max-w-4xl mx-auto w-full">
-      {FAQS.map((faq, index) => {
+      {displayFAQs.map((faq, index) => {
         const isOpen = openIndex === index;
         return (
           <div

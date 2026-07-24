@@ -1,10 +1,10 @@
 "use client";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ArrowRight, Phone, ArrowUpRight, CheckCircle, 
-  MapPin, Shield, Star, Clock, Calendar, MessageSquare
+  MapPin, Shield, Star, Clock, Calendar, MessageSquare, Ship
 } from 'lucide-react';
 import { 
   BRAND_NAME, BRAND_TAGLINE, BRAND_DESCRIPTION, 
@@ -20,12 +20,119 @@ import HeroSection from '@/components/HeroSection';
 export default function HomePage() {
   const [activeProcess, setActiveProcess] = useState(0);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [dynamicTestimonials, setDynamicTestimonials] = useState([]);
+  const [dynamicFAQs, setDynamicFAQs] = useState([]);
+  const [dynamicSlides, setDynamicSlides] = useState([]);
+  const [dynamicServices, setDynamicServices] = useState(SERVICES);
+
+  // Fetch testimonials, FAQs, Hero Slides, and Services from API, fallback to constants if empty/fails
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch('/api/testimonials?all=true');
+        const data = await res.json();
+        if (res.ok && data.success && data.testimonials && data.testimonials.length > 0) {
+          setDynamicTestimonials(data.testimonials);
+        } else {
+          setDynamicTestimonials(TESTIMONIALS);
+        }
+      } catch (error) {
+        console.error('Failed to fetch testimonials, falling back to static constants:', error);
+        setDynamicTestimonials(TESTIMONIALS);
+      }
+    };
+
+    const fetchFAQs = async () => {
+      try {
+        const res = await fetch('/api/faqs?all=true');
+        const data = await res.json();
+        if (res.ok && data.success && data.faqs && data.faqs.length > 0) {
+          setDynamicFAQs(data.faqs);
+        } else {
+          setDynamicFAQs(FAQS);
+        }
+      } catch (error) {
+        console.error('Failed to fetch FAQs, falling back to static constants:', error);
+        setDynamicFAQs(FAQS);
+      }
+    };
+
+    const fetchSlides = async () => {
+      try {
+        const res = await fetch('/api/hero-slides?all=true');
+        const data = await res.json();
+        if (res.ok && data.success && data.slides && data.slides.length > 0) {
+          setDynamicSlides(data.slides);
+        }
+      } catch (error) {
+        console.error('Failed to fetch hero slides, falling back to static constants:', error);
+      }
+    };
+
+    const fetchServices = async () => {
+      try {
+        const res = await fetch('/api/services?status=active&limit=6');
+        const data = await res.json();
+        if (data.success && data.services && data.services.length > 0) {
+          const mapped = data.services.map((s) => {
+            const staticMatch = SERVICES.find(
+              (staticSrv) => staticSrv.id === s.slug || staticSrv.title.toLowerCase() === s.title.toLowerCase()
+            );
+            return {
+              id: s.slug,
+              title: s.title,
+              description: s.shortDescription,
+              image: s.image || '/images/international-courier.svg',
+              benefits: staticMatch?.benefits || [
+                "Customs clearance assistance",
+                "End-to-end real-time tracking",
+                "Express delivery guarantees",
+                "Secure tamper-proof packaging"
+              ],
+              icon: staticMatch?.icon || Ship,
+            };
+          });
+          setDynamicServices(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to fetch services, falling back to static constants:', error);
+      }
+    };
+
+    fetchTestimonials();
+    fetchFAQs();
+    fetchSlides();
+    fetchServices();
+  }, []);
+
+  // Auto-play the Shipping Process steps every 4 seconds and auto-scroll active button into view (container-only)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveProcess((prev) => (prev + 1) % SHIPPING_PROCESS.length);
+    }, 4000);
+
+    const activeBtn = document.getElementById(`step-btn-${activeProcess}`);
+    if (activeBtn) {
+      const container = activeBtn.parentElement;
+      if (container) {
+        const containerWidth = container.offsetWidth;
+        const btnOffsetLeft = activeBtn.offsetLeft;
+        const btnWidth = activeBtn.offsetWidth;
+        container.scrollTo({
+          left: btnOffsetLeft - containerWidth / 2 + btnWidth / 2,
+          behavior: 'smooth'
+        });
+      }
+    }
+
+    return () => clearInterval(interval);
+  }, [activeProcess]);
 
   return (
     <div className="relative overflow-x-hidden bg-background">
       
       {/* 1. HERO SECTION */}
-      <HeroSection />
+      <HeroSection slides={dynamicSlides} />
 
       {/* 2. STATS SECTION */}
       <section className="py-2 sm:py-16 relative z-10 px-6 md:px-8 bg-slate-50/20 border-b border-black/[0.02]">
@@ -93,15 +200,15 @@ export default function HomePage() {
           </div>
 
           <div className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-4 md:pb-0 px-6 -mx-6 md:px-0 md:mx-0 scrollbar-none snap-x snap-mandatory">
-            {SERVICES.slice(0, 6).map((service) => {
+            {dynamicServices.slice(0, 6).map((service) => {
               const IconComponent = service.icon;
               return (
                 <div
                   key={service.id}
-                  className="group relative bg-white rounded-[24px] border border-black/[0.04] overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-500 w-[280px] sm:w-[320px] md:w-auto shrink-0 snap-align-start"
+                  className="group relative bg-white rounded-[20px] sm:rounded-[24px] border border-black/[0.04] overflow-hidden shadow-premium hover:shadow-premium-hover transition-all duration-500 w-[230px] sm:w-[300px] md:w-auto shrink-0 snap-align-start"
                 >
                   {/* Service Image */}
-                  <div className="h-48 overflow-hidden relative">
+                  <div className="h-32 sm:h-44 overflow-hidden relative">
                     <img
                       src={service.image}
                       alt={service.title}
@@ -111,29 +218,29 @@ export default function HomePage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/60 via-transparent to-transparent" />
                     
                     {/* Floating Icon */}
-                    <div className="absolute bottom-4 left-6 w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-lg text-primary">
-                      <IconComponent className="w-5 h-5" />
+                    <div className="absolute bottom-3 left-4 w-9 h-9 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white flex items-center justify-center shadow-lg text-primary">
+                      <IconComponent className="w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
                   </div>
 
-                  <div className="p-6">
-                    <h3 className="font-heading font-bold text-xl text-dark mb-2">{service.title}</h3>
-                    <p className="text-dark/60 text-sm leading-relaxed mb-6 h-12 overflow-hidden">
+                  <div className="p-4 sm:p-6">
+                    <h3 className="font-heading font-bold text-base sm:text-xl text-dark mb-1 sm:mb-2">{service.title}</h3>
+                    <p className="text-dark/60 text-[11px] sm:text-sm leading-relaxed mb-4 h-12 overflow-hidden">
                       {service.description}
                     </p>
-                    <ul className="flex flex-col gap-2 mb-6">
+                    <ul className="flex flex-col gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                       {service.benefits.slice(0, 2).map((benefit, idx) => (
-                        <li key={idx} className="flex items-center gap-2 text-xs text-dark/70">
-                          <CheckCircle className="w-3.5 h-3.5 text-success shrink-0" />
-                          <span>{benefit}</span>
+                        <li key={idx} className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-dark/70 truncate">
+                          <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-success shrink-0" />
+                          <span className="truncate">{benefit}</span>
                         </li>
                       ))}
                     </ul>
                     <Link
-                      href="/services"
-                      className="btn-outline w-full flex items-center justify-center gap-2"
+                      href={`/services/${service.id}`}
+                      className="btn-outline w-full flex items-center justify-center gap-2 text-xs sm:text-sm py-2 sm:py-3"
                     >
-                      Learn More
+                      View Details
                       <ArrowUpRight className="w-4 h-4 text-dark/40" />
                     </Link>
                   </div>
@@ -162,14 +269,17 @@ export default function HomePage() {
             {SHIPPING_PROCESS.map((step, idx) => (
               <button
                 key={idx}
+                id={`step-btn-${idx}`}
                 onClick={() => setActiveProcess(idx)}
-                className={`whitespace-nowrap flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-xl lg:rounded-2xl text-left transition-all duration-300 focus:outline-none shrink-0 snap-align-start ${
+                className={`whitespace-nowrap flex items-center gap-3 lg:gap-4 p-3 lg:p-4 rounded-xl lg:rounded-2xl text-left transition-all duration-300 focus:outline-none shrink-0 snap-align-start border ${
                   activeProcess === idx
-                    ? 'bg-primary/5 border border-primary/20 text-primary font-bold'
-                    : 'bg-black/[0.01] border border-transparent text-dark/70'
+                    ? 'bg-primary/5 border-primary/30 text-primary font-bold shadow-sm'
+                    : 'bg-transparent border-transparent text-dark/65 hover:bg-slate-50 hover:text-dark'
                 }`}
               >
-                <span className="font-numbers font-black text-sm lg:text-lg">{idx + 1}</span>
+                <span className={`font-numbers font-black text-sm lg:text-lg transition-colors mr-1 ${
+                  activeProcess === idx ? 'text-primary' : 'text-dark/30'
+                }`}>{idx + 1}</span>
                 <span className="font-heading font-bold text-xs lg:text-base">{step.title}</span>
               </button>
             ))}
@@ -177,19 +287,33 @@ export default function HomePage() {
 
           <div className="lg:col-span-7 bg-dark text-white rounded-2xl p-6 sm:p-8 min-h-[250px] sm:min-h-[300px] flex flex-col justify-between relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-            <div>
-              <span className="text-[10px] text-secondary font-bold uppercase tracking-widest font-heading">
-                Step {activeProcess + 1} details
-              </span>
-              <h3 className="font-heading font-bold text-2xl sm:text-3xl mt-1 text-white">{SHIPPING_PROCESS[activeProcess].title}</h3>
-              <p className="text-white/70 text-xs sm:text-sm md:text-base leading-relaxed mt-4 max-w-md">
-                {SHIPPING_PROCESS[activeProcess].description}. We employ state-of-the-art checkpoints to ensure your items are categorized, routed, and delivered strictly on schedule.
-              </p>
-            </div>
-            <div className="flex items-center gap-2 text-[10px] sm:text-xs text-secondary mt-8 pt-4 border-t border-white/5">
-              <Shield className="w-4 h-4 shrink-0" />
-              <span>Full cargo insurance coverage applicable at this stage.</span>
-            </div>
+            
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProcess}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="flex-1 flex flex-col justify-between h-full"
+              >
+                <div>
+                  <span className="text-[10px] text-secondary font-bold uppercase tracking-widest font-heading">
+                    Step {activeProcess + 1} details
+                  </span>
+                  <h3 className="font-heading font-bold text-2xl sm:text-3xl mt-1 text-white">
+                    {SHIPPING_PROCESS[activeProcess].title}
+                  </h3>
+                  <p className="text-white/70 text-xs sm:text-sm md:text-base leading-relaxed mt-4 max-w-md">
+                    {SHIPPING_PROCESS[activeProcess].description}. We employ state-of-the-art checkpoints to ensure your items are categorized, routed, and delivered strictly on schedule.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] sm:text-xs text-secondary mt-8 pt-4 border-t border-white/5 w-full">
+                  <Shield className="w-4 h-4 shrink-0" />
+                  <span>Full cargo insurance coverage applicable at this stage.</span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>
@@ -229,13 +353,13 @@ export default function HomePage() {
             const scrollLeft = e.target.scrollLeft;
             const cardWidth = 290 + 24; // card width + gap
             const activeIdx = Math.min(
-              TESTIMONIALS.length - 1,
+              dynamicTestimonials.length - 1,
               Math.max(0, Math.round(scrollLeft / cardWidth))
             );
             setActiveTestimonial(activeIdx);
           }}
         >
-          {TESTIMONIALS.map((t, idx) => (
+          {dynamicTestimonials.map((t, idx) => (
             <div
               key={idx}
               className="glass-card p-6 rounded-[24px] flex flex-col justify-between w-[290px] sm:w-[320px] md:w-auto shrink-0 snap-align-start"
@@ -252,10 +376,11 @@ export default function HomePage() {
               </div>
               <div className="flex items-center gap-3 pt-4 border-t border-black/[0.04]">
                 <img
-                  src={t.image}
+                  src={t.image || '/images/user-avatar.svg'}
                   alt={t.name}
-                  className="w-10 h-10 rounded-full object-cover border border-black/10"
+                  className="w-10 h-10 rounded-full object-cover border border-black/10 bg-slate-100"
                   loading="lazy"
+                  onError={(e) => { e.target.src = '/images/user-avatar.svg'; }}
                 />
                 <div>
                   <h4 className="font-heading font-bold text-sm text-dark">{t.name}</h4>
@@ -268,7 +393,7 @@ export default function HomePage() {
 
         {/* Pagination Dots for Mobile */}
         <div className="flex md:hidden justify-center gap-1.5 mt-6">
-          {TESTIMONIALS.map((_, idx) => (
+          {dynamicTestimonials.map((_, idx) => (
             <span
               key={idx}
               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -334,7 +459,7 @@ export default function HomePage() {
           </h2>
         </div>
 
-        <FAQAccordion />
+        <FAQAccordion faqs={dynamicFAQs} />
       </section>
 
       {/* 11. CALL TO ACTION */}

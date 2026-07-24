@@ -56,3 +56,40 @@ model Order {
 
   @@map("orders")
 }
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String
+  quote     String   @db.Text
+  rating    Int      @default(5)
+  image     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("testimonials")
+}
+
+model FAQ {
+  id        Int      @id @default(autoincrement())
+  question  String   @db.Text
+  answer    String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("faqs")
+}
+
+model HeroSlide {
+  id         Int      @id @default(autoincrement())
+  url        String
+  title      String?
+  location   String?
+  statsValue String?  @map("stats_value")
+  statsLabel String?  @map("stats_label")
+  feature    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("hero_slides")
+}

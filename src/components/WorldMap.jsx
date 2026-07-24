@@ -1,6 +1,7 @@
 "use client";
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Globe, Shield, Clock, Award } from 'lucide-react';
 
 const MAP_HUBS = [
@@ -18,6 +19,37 @@ export default function WorldMap() {
   // If activeHub is null, default active state to HQ (Ahmedabad)
   const currentActive = activeHub || MAP_HUBS.find(h => h.isOrigin);
 
+  // Auto-cycle through the map hubs every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveHub((prev) => {
+        const currentActiveHub = prev || MAP_HUBS.find(h => h.isOrigin);
+        const currentIdx = MAP_HUBS.findIndex(h => h.id === currentActiveHub.id);
+        const nextIdx = (currentIdx + 1) % MAP_HUBS.length;
+        return MAP_HUBS[nextIdx];
+      });
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [activeHub]);
+
+  // Scroll active selector button on mobile into view (container-only)
+  useEffect(() => {
+    const activeBtn = document.getElementById(`map-btn-${currentActive.id}`);
+    if (activeBtn) {
+      const container = activeBtn.parentElement;
+      if (container) {
+        const containerWidth = container.offsetWidth;
+        const btnOffsetLeft = activeBtn.offsetLeft;
+        const btnWidth = activeBtn.offsetWidth;
+        container.scrollTo({
+          left: btnOffsetLeft - containerWidth / 2 + btnWidth / 2,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [currentActive]);
+
   return (
     <div className="relative w-full flex flex-col md:block md:aspect-[2/1] bg-dark-light rounded-3xl border border-white/5 overflow-hidden p-5 md:p-10 shadow-premium gap-4 md:gap-0">
       {/* Grid Pattern Overlay */}
@@ -31,6 +63,7 @@ export default function WorldMap() {
           return (
             <button
               key={hub.id}
+              id={`map-btn-${hub.id}`}
               onClick={() => setActiveHub(hub)}
               className={`snap-align-start px-4 py-2 rounded-xl text-xs font-heading font-bold whitespace-nowrap transition-all duration-300 border ${
                 isActive
@@ -191,12 +224,15 @@ export default function WorldMap() {
 
       {/* Floating Info Overlay (Active Hub Panel) */}
       <div className="relative md:absolute md:bottom-6 md:right-6 z-10 w-full md:w-80">
-        <div className="bg-dark/95 backdrop-blur-lg p-5 rounded-2xl border border-white/10 shadow-2xl flex flex-col gap-2">
-          {currentActive ? (
+        <div className="bg-dark/95 backdrop-blur-lg p-5 rounded-2xl border border-white/10 shadow-2xl flex flex-col gap-2 min-h-[120px]">
+          <AnimatePresence mode="wait">
             <motion.div
-              initial={{ opacity: 0, y: 5 }}
-              animate={{ opacity: 1, y: 0 }}
               key={currentActive.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              className="flex-1"
             >
               <span className="text-[10px] text-secondary font-bold uppercase tracking-widest">
                 {currentActive.isOrigin ? "Origin Hub" : "Destination Node"}
@@ -204,17 +240,7 @@ export default function WorldMap() {
               <h4 className="font-heading font-bold text-white text-base mt-0.5">{currentActive.name}</h4>
               <p className="text-xs text-white/70 mt-1">{currentActive.details}</p>
             </motion.div>
-          ) : (
-            <div>
-              <span className="text-[10px] text-secondary font-bold uppercase tracking-widest">
-                HQ Location
-              </span>
-              <h4 className="font-heading font-bold text-white text-base mt-0.5">Ahmedabad, India</h4>
-              <p className="text-xs text-white/70 mt-1">
-                Connected to 220+ countries directly via express international airways.
-              </p>
-            </div>
-          )}
+          </AnimatePresence>
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-2 gap-2 mt-2 pt-2.5 border-t border-white/5">
@@ -226,9 +252,9 @@ export default function WorldMap() {
               <Award className="w-3.5 h-3.5 text-accent" />
               <span>Full Insurance</span>
             </div>
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }
